@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.pro100svitlo.fingerprintAuthHelper">
+
+    <uses-permission android:name="android.permission.USE_FINGERPRINT"
+        />
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true"
+        >
+        <service
+            android:name=".FahTimeOutService"
+            android:exported="true"
+            android:enabled="true"
+            />
+    </application>
+
+</manifest>

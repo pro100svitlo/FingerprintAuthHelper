@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+}
+
+publish {
+    groupId = 'com.github.pro100svitlo'
+    artifactId = 'fingerprintAuthHelper'
+    publishVersion = '1.1.0'
+    desc = 'A small library that allow You easy manage fingererprint authentication on devices with ' +
+            'fingerprint scanner and Android M and upper'
+    licences = ['MIT']
+    website = 'https://githb.com/pro100svitlo/fingerprintauthhelper'
+}
