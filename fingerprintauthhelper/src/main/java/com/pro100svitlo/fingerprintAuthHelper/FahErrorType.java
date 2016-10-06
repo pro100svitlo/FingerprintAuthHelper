@@ -8,21 +8,21 @@ public class FahErrorType {
     public static int HELP_ERROR_BASE = 100;
     public static int AUTH_ERROR_BASE = 200;
 
-    interface General{
+    public interface General{
         int PERMISSION_NEEDED = -100;
         int LOCK_SCREEN_DISABLED = -101;
         int NO_FINGERPRINTS = -102;
         int HARDWARE_DISABLED = -104;
     }
 
-    interface Help{
+    public interface Help{
         int HELP_SCENED_PARTIAL = 101;
         int HELP_SCANNER_DIRTY = 102;
         int HELP_MOVE_TO_SLOW = 103;
         int HELP_MOVE_TO_FAST = 104;
     }
 
-    interface Auth{
+    public interface Auth{
         int AUTH_NOT_RECOGNIZED = 208;
         int AUTH_UNAVAILABLE = 201;
         int AUTH_UNABLE_TO_PROCESS = 202;

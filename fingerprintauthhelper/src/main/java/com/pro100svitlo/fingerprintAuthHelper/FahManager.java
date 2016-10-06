@@ -89,6 +89,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
     private final static String KEY_LOGGING_ENABLE = "KEY_LOGGING_ENABLE";
     private final static String KEY_SECURE_KEY_NAME = "KEY_SECURE_KEY_NAME";
     private final static String KEY_IS_LISTENING = "KEY_IS_LISTENING";
+    private final int DEFAULT_TRY_COUNT = 5;
 
     private Context mContext;
     private WeakReference<FahListener> mListener;
@@ -195,13 +196,20 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         logThis("AUTH_NOT_RECOGNIZED");
         mTryCount--;
         logThis("try #" + String.valueOf(mMaxTryCount - mTryCount));
-        if (mTryCount > 1) {
+        if (mTryCount > 0) {
             if (mListener != null) {
                 mListener.get().onFingerprintStatus(
                         false,
                         FahErrorType.Auth.AUTH_NOT_RECOGNIZED,
                         mContext.getString(R.string.FINGERPRINT_NOT_RECOGNIZED));
             }
+        }
+        if (mMaxTryCount < DEFAULT_TRY_COUNT && mTryCount == 0){
+            mListener.get().onFingerprintStatus(
+                    false,
+                    FahErrorType.Auth.AUTH_TO_MANY_TRIES,
+                    getToManyTriesErrorStr());
+            runTimeOutService();
         }
     }
 
@@ -270,6 +278,10 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         mKeyName = savedInstanceState.getString(KEY_SECURE_KEY_NAME);
         mIsListening = savedInstanceState.getBoolean(KEY_IS_LISTENING, false);
 
+        if (mTimeOutLeft > 0 && mListener.get() != null){
+            mListener.get().onFingerprintListening(false, mTimeOutLeft);
+        }
+
         registerBroadcast(true);
     }
 
@@ -292,7 +304,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
     }
 
     public int getTryCountLeft(){
-        return mMaxTryCount - mTryCount;
+        return mTryCount;
     }
 
     public boolean canListen(boolean showError){
@@ -448,11 +460,11 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
     }
 
     private void registerBroadcast(boolean register){
-        if (register && !mBroadcastRegistered){
+        if (mTimeOutLeft > 0 && register && !mBroadcastRegistered){
             logThis("mBroadcastRegistered = " + true);
             mBroadcastRegistered = true;
             mContext.registerReceiver(timeOutBroadcast, new IntentFilter(FahTimeOutService.TIME_OUT_BROADCAST));
-        } else if (!register && mBroadcastRegistered){
+        } else if (mTimeOutLeft > 0 && !register && mBroadcastRegistered){
             logThis("mBroadcastRegistered = " + false);
             mBroadcastRegistered = false;
             mContext.unregisterReceiver(timeOutBroadcast);
@@ -464,6 +476,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         if (mTimeOutIntent == null) {
             mTimeOutIntent = new Intent(mContext, FahTimeOutService.class);
         }
+        mTimeOutLeft = mTryTimeOutDefault;
         registerBroadcast(true);
         mTimeOutIntent.putExtra(FahTimeOutService.KEY_TRY_TIME_OUT, mTryTimeOut);
         mContext.startService(mTimeOutIntent);
@@ -514,11 +527,11 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
                 mListener.get().onFingerprintListening(false, mTimeOutLeft);
                 saveTimeOut(System.currentTimeMillis() + mTimeOutLeft);
             } else if (mTimeOutLeft <= 0){
+                registerBroadcast(false);
                 saveTimeOut(-1);
                 mTryTimeOut = mTryTimeOutDefault;
                 startListening();
                 logThis("startListening after timeout");
-                registerBroadcast(false);
             }
         }
     };

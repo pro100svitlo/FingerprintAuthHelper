@@ -1,4 +1,7 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">FingerprintAuthDemo</string>
-    <string name="action_settings">Settings</string>
+    <string name="touch_sensor">Touch sensor</string>
+    <string name="fingerprintTryIn">Can retry in\n<xliff:g id="min">%02d</xliff:g>:<xliff:g id="sec">%02d</xliff:g></string>
+    <string name="notSupport">This devise does not support fingerprint technology</string>
+    <string name="appCodeActivity_tv_fingerprintTryCount"><xliff:g id="error">%s</xliff:g>\n<xliff:g id="try">%d</xliff:g> tries left</string>
 </resources>

@@ -49,6 +49,8 @@ public class FingerprintAuthHelper {
         public Builder setMaxTryCount(int maxTryCount){
             if (maxTryCount > mMaxTryCount){
                 throw new IllegalArgumentException("maxTryCount must be less or equal than " + mMaxTryCount);
+            } else if (maxTryCount <= 0){
+                throw new IllegalArgumentException("maxTryCount must be more than 0 but less or equal than" + mMaxTryCount);
             }
             mMaxTryCount = maxTryCount;
             return this;
@@ -64,7 +66,7 @@ public class FingerprintAuthHelper {
     private FahManager mFahManager;
     private Context mContext;
 
-    private int mGetTryCountLeft;
+    private int mTryCountLeft;
     private long mTimeOutLeft;
     private boolean mLoggingEnable = false;
     private boolean mCanListenByUser = true;
@@ -83,6 +85,8 @@ public class FingerprintAuthHelper {
                     .setTryTimeOut(b.mTryTimeOut)
                     .setMaxTryCount(b.mMaxTryCount)
                     .build();
+            mTimeOutLeft = mFahManager.getTimeOutLeft();
+            mTryCountLeft = mFahManager.getTryCountLeft();
         }
     }
 
@@ -94,7 +98,7 @@ public class FingerprintAuthHelper {
         } if (!canListenByUser()){
             return false;
         }
-        mIsListening = mFahManager.startListening();
+        mIsListening = mTimeOutLeft <= 0 && mFahManager.startListening();
         logThis("mIsListening = " + mIsListening);
         return mIsListening;
     }
@@ -164,9 +168,9 @@ public class FingerprintAuthHelper {
             serviceNotEnable("getTryCountLeft");
             return -1;
         }
-        mGetTryCountLeft = mFahManager.getTryCountLeft();
-        logThis("mGetTryCountLeft = " + mGetTryCountLeft);
-        return mGetTryCountLeft;
+        mTryCountLeft = mFahManager.getTryCountLeft();
+        logThis("mTryCountLeft = " + mTryCountLeft);
+        return mTryCountLeft;
     }
     public boolean canListen(boolean showError){
         logThis("canListen called");
