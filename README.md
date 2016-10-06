@@ -1,7 +1,7 @@
 # FingerprintAuthDemo
 A small library that allow You easy manage fingererprint authentication on devices with fingerprint scanner and Android M and upper
 
-1. [Demo](https://play.google.com/store/apps/details?id=com.pro100svitlo.nfccardread)
+1. [Demo](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintAuthHelper)
 2. [Usage](#usage)
 3. [Callbacks](#callbacks)
 4. [Updates](#updates)
