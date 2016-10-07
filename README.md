@@ -1,7 +1,8 @@
-# FingerprintAuthDemo
+# FingerprintAuthHelper
 A small library that allows You to easily manage fingererprint authentication inside your Activity or Fragment on devices with fingerprint scanner and Android M and higher.
+Min sdk version 14.
 
-1. [Demo](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintAuthHelper)
+1. [Demo app](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintAuthHelper)
 2. [Usage](#usage)
 3. [Documentation](Docs.md)
 3. [Callbacks](#callbacks)
@@ -27,7 +28,6 @@ A small library that allows You to easily manage fingererprint authentication in
 ```sh
 
     private FingerprintAuthHelper mFAH;
-    private FahSecureSettingsDialog mSecureSettingsDialog;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +119,10 @@ Your activity or fragment must implement FahListener;
 ```
 
 ### Updates
+* v.1.1.3
+    1. init context must be instance of Activity
+    2. add method showSecuritySettingsDialog() to FingerprintAuthHelper
+    3. add help error
 * v.1.1.2
     1. add possibility to set max count of tries
 
