@@ -18,7 +18,7 @@ A small library that allows You to easily manage fingererprint authentication in
 ##### Add the dependencies to your gradle file:
 ```sh
     dependencies {
-        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.2'
+        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.3'
     }
 ```
 
