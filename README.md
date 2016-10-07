@@ -2,7 +2,7 @@
 A small library that allows You to easily manage fingererprint authentication inside your Activity or Fragment on devices with fingerprint scanner and Android M and higher.
 Min sdk version 14.
 
-1. [Demo app](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintAuthHelper)
+1. [Demo app](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintauthdemo)
 2. [Usage](#usage)
 3. [Documentation](Docs.md)
 3. [Callbacks](#callbacks)
