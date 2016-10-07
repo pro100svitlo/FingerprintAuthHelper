@@ -66,7 +66,7 @@ canListen()
     // return true if device can listen
     // return false if device can't listen. Reason can be different. See logs for more details
     // (for example if setCanListenByUser(false), canListen() will return false)
-
+    
 isListening()
     // in case you just need to know if devise listening for fingerprint rigth now
     // return true if device listening 
@@ -80,7 +80,6 @@ getTimeOutLeft()
     // in case there are was to meny tries and timer is turned on 
     // and you need to know how many milliseconds are left
     // return long
-
 
 isHardwareEnable()
     // method that check if device support fingerprint technology and
