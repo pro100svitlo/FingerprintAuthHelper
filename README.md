@@ -1,13 +1,18 @@
 # FingerprintAuthDemo
-A small library that allow You easy manage fingererprint authentication on devices with fingerprint scanner and Android M and upper
+A small library that allow You easy manage fingererprint authentication inside your Activity or Fragment on devices with fingerprint scanner and Android M and upper.
 
 1. [Demo](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintAuthHelper)
 2. [Usage](#usage)
+3. [Documentation](Docs.md)
 3. [Callbacks](#callbacks)
 4. [Updates](#updates)
 5. [Used In](#used-in)
 6. [Questions and help](#questions-and-help)
 7. [License](#license)
+
+![alt text](screenshots/sc_0.png "Touch sensor")
+![alt text](screenshots/sc_1.png "Try in")
+
 
 # Usage
 ##### Add the dependencies to your gradle file:
@@ -27,7 +32,8 @@ A small library that allow You easy manage fingererprint authentication on devic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     ...
-        mFAH = new FingerprintAuthHelper.Builder(this, this)
+        mFAH = new FingerprintAuthHelper
+                .Builder(this, this)
                 .build();
 
         if (mFAH.isHardwareEnable()){
@@ -62,6 +68,7 @@ A small library that allow You easy manage fingererprint authentication on devic
     }
 ```
 That's pretty much all what you need to start the work!
+Full documentation and all option descriptions you can find [here](Docs.md).
 
 ---
 
