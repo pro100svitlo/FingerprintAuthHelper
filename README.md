@@ -33,7 +33,7 @@ A small library that allows You to easily manage fingererprint authentication in
     protected void onCreate(Bundle savedInstanceState) {
     ...
         mFAH = new FingerprintAuthHelper
-                .Builder(this, this)
+                .Builder(this, this) //(Context inscance of Activity, FahListener)
                 .build();
 
         if (mFAH.isHardwareEnable()){
@@ -79,6 +79,10 @@ Your activity or fragment must implement FahListener;
 ```sh
     @Override
     public void onFingerprintStatus(boolean authSuccessful, int errorType, CharSequence errorMess) {
+        // authSuccessful - boolean that shows auth status
+        // errorType - if auth was failed, you can catch error type
+        // errorMess - if auth was failed, errorMess will tell you (and user) the reason
+        
         if (authSuccessful){
             // do some stuff here in case auth was successful
         } else if (mFAH != null){
@@ -86,12 +90,12 @@ Your activity or fragment must implement FahListener;
             switch (errorType){
                 case FahErrorType.General.LOCK_SCREEN_DISABLED:
                 case FahErrorType.General.NO_FINGERPRINTS:
-                    if (mSecureSettingsDialog == null){
-                        mSecureSettingsDialog = new FahSecureSettingsDialog.Builder(this, mFAH).build();
-                    }
-                    mSecureSettingsDialog.show();
+                    mFAH.showSecuritySettingsDialog();
                     break;
                 case FahErrorType.Auth.AUTH_NOT_RECOGNIZED:
+                    //do some stuff here
+                    break;
+                case FahErrorType.Auth.AUTH_TO_MANY_TRIES:
                     //do some stuff here
                     break;
             }
@@ -100,6 +104,9 @@ Your activity or fragment must implement FahListener;
 
     @Override
     public void onFingerprintListening(boolean listening, long milliseconds) {
+        // listening - status of fingerprint listen process
+        // milliseconds - timeout value, will be > 0, if listening = false & errorType = AUTH_TO_MANY_TRIES
+        
         if (listening){
             //add some code here
         } else {
