@@ -49,8 +49,8 @@ public class FahSecureSettingsDialog {
             return this;
         }
 
-        public Builder setPostisive(String postive){
-            mPositive = postive;
+        public Builder setPostisive(String positive){
+            mPositive = positive;
             return this;
         }
 

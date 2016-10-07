@@ -16,10 +16,11 @@ public class FahErrorType {
     }
 
     public interface Help{
-        int HELP_SCENED_PARTIAL = 101;
-        int HELP_SCANNER_DIRTY = 102;
-        int HELP_MOVE_TO_SLOW = 103;
-        int HELP_MOVE_TO_FAST = 104;
+        int HELP_SCANNED_PARTIAL = 101;
+        int HELP_INSUFFICIENT = 102;
+        int HELP_SCANNER_DIRTY = 103;
+        int HELP_MOVE_TO_SLOW = 104;
+        int HELP_MOVE_TO_FAST = 105;
     }
 
     public interface Auth{
@@ -43,8 +44,10 @@ public class FahErrorType {
             case General.HARDWARE_DISABLED:
                 return "HARDWARE_DISABLED";
 
-            case Help.HELP_SCENED_PARTIAL:
-                return "HELP_SCENED_PARTIAL";
+            case Help.HELP_SCANNED_PARTIAL:
+                return "HELP_SCANNED_PARTIAL";
+            case Help.HELP_INSUFFICIENT:
+                return "HELP_INSUFFICIENT";
             case Help.HELP_SCANNER_DIRTY:
                 return "HELP_SCANNER_DIRTY";
             case Help.HELP_MOVE_TO_SLOW:

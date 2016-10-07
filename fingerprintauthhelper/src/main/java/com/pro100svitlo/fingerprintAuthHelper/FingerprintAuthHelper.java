@@ -1,5 +1,6 @@
 package com.pro100svitlo.fingerprintAuthHelper;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -24,6 +25,12 @@ public class FingerprintAuthHelper {
         private int mMaxTryCount = 5;
 
         public Builder(Context c, FahListener l) {
+            if (c instanceof Activity){
+                mContext = c;
+            } else {
+                throw new IllegalArgumentException("Context for FingerprintAuthHelper must be " +
+                        "instance of Activity");
+            }
             mContext = c;
             mListener = new WeakReference<>(l);
         }
@@ -64,6 +71,7 @@ public class FingerprintAuthHelper {
     public final static String TAG = FingerprintAuthHelper.class.getSimpleName();
 
     private FahManager mFahManager;
+    private FahSecureSettingsDialog mFahSecurityDialog;
     private Context mContext;
 
     private int mTryCountLeft;
@@ -140,13 +148,13 @@ public class FingerprintAuthHelper {
 
     public boolean onDestroy(){
         logThis("onDestroy called");
+        mContext = null;
         if (mFahManager == null){
             serviceNotEnable("onDestroy");
             return false;
         }
         mFahManager.onDestroy();
         mFahManager = null;
-        mContext = null;
         logThis("onDestroy successful");
         return true;
     }
@@ -222,6 +230,15 @@ public class FingerprintAuthHelper {
     public void openSecuritySettings(){
         logThis("openSecuritySettings called");
         mContext.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
+    }
+
+    public void showSecuritySettingsDialog(){
+        if (mFahSecurityDialog == null){
+            mFahSecurityDialog = new FahSecureSettingsDialog
+                    .Builder(mContext, this)
+                    .build();
+        }
+        mFahSecurityDialog.show();
     }
 
     private boolean isSdkVersionOk(){

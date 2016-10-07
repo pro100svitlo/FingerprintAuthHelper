@@ -179,6 +179,9 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
     @Override
     public void onAuthenticationHelp(int helpMsgId,
                                      CharSequence helpString) {
+        if (helpMsgId == 0){
+            return;
+        }
         logThis("onAuthenticationHelp called");
         logThis("error: " + FahErrorType.getErrorNameByCode(FahErrorType.HELP_ERROR_BASE + helpMsgId) +
                 " (" + helpString + ")");
@@ -217,7 +220,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         logThis("onAuthenticationSucceeded");
         if (mListener != null) {
-            mListener.get().onFingerprintStatus(true, 0, "");
+            mListener.get().onFingerprintStatus(true, -1, "");
         }
     }
 

@@ -130,10 +130,7 @@ public class MainActivity extends AppCompatActivity implements FahListener {
             switch (errorType){
                 case FahErrorType.General.LOCK_SCREEN_DISABLED:
                 case FahErrorType.General.NO_FINGERPRINTS:
-                    if (mSecureSettingsDialog == null){
-                        mSecureSettingsDialog = new FahSecureSettingsDialog.Builder(this, mFAH).build();
-                    }
-                    mSecureSettingsDialog.show();
+                    mFAH.showSecuritySettingsDialog();
                     break;
                 case FahErrorType.Auth.AUTH_NOT_RECOGNIZED:
                     DrawableCompat.setTint(mFingerprintIcon.getDrawable(), mFpColorError);
