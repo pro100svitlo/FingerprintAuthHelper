@@ -1,19 +1,24 @@
 # FingerprintAuthDemo
-A small library that allow You easy manage fingererprint authentication on devices with fingerprint scanner and Android M and upper
+A small library that allows You to easily manage fingererprint authentication inside your Activity or Fragment on devices with fingerprint scanner and Android M and higher.
 
 1. [Demo](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintAuthHelper)
 2. [Usage](#usage)
+3. [Documentation](Docs.md)
 3. [Callbacks](#callbacks)
 4. [Updates](#updates)
 5. [Used In](#used-in)
 6. [Questions and help](#questions-and-help)
 7. [License](#license)
 
+![alt text](screenshots/sc_0.png "Touch sensor")
+![alt text](screenshots/sc_1.png "Try in")
+
+
 # Usage
 ##### Add the dependencies to your gradle file:
 ```sh
     dependencies {
-        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.2'
+        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.3'
     }
 ```
 
@@ -27,7 +32,8 @@ A small library that allow You easy manage fingererprint authentication on devic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     ...
-        mFAH = new FingerprintAuthHelper.Builder(this, this)
+        mFAH = new FingerprintAuthHelper
+                .Builder(this, this) //(Context inscance of Activity, FahListener)
                 .build();
 
         if (mFAH.isHardwareEnable()){
@@ -62,6 +68,7 @@ A small library that allow You easy manage fingererprint authentication on devic
     }
 ```
 That's pretty much all what you need to start the work!
+Full documentation and all options descriptions you can find [here](Docs.md).
 
 ---
 
@@ -72,19 +79,23 @@ Your activity or fragment must implement FahListener;
 ```sh
     @Override
     public void onFingerprintStatus(boolean authSuccessful, int errorType, CharSequence errorMess) {
+        // authSuccessful - boolean that shows auth status
+        // errorType - if auth was failed, you can catch error type
+        // errorMess - if auth was failed, errorMess will tell you (and user) the reason
+        
         if (authSuccessful){
-            // do some stuff here in case auth was successfull
+            // do some stuff here in case auth was successful
         } else if (mFAH != null){
           // do some stuff here in case auth failed
             switch (errorType){
                 case FahErrorType.General.LOCK_SCREEN_DISABLED:
                 case FahErrorType.General.NO_FINGERPRINTS:
-                    if (mSecureSettingsDialog == null){
-                        mSecureSettingsDialog = new FahSecureSettingsDialog.Builder(this, mFAH).build();
-                    }
-                    mSecureSettingsDialog.show();
+                    mFAH.showSecuritySettingsDialog();
                     break;
                 case FahErrorType.Auth.AUTH_NOT_RECOGNIZED:
+                    //do some stuff here
+                    break;
+                case FahErrorType.Auth.AUTH_TO_MANY_TRIES:
                     //do some stuff here
                     break;
             }
@@ -93,6 +104,9 @@ Your activity or fragment must implement FahListener;
 
     @Override
     public void onFingerprintListening(boolean listening, long milliseconds) {
+        // listening - status of fingerprint listen process
+        // milliseconds - timeout value, will be > 0, if listening = false & errorType = AUTH_TO_MANY_TRIES
+        
         if (listening){
             //add some code here
         } else {
@@ -106,10 +120,10 @@ Your activity or fragment must implement FahListener;
 
 ### Updates
 * v.1.1.2
-    1. add possibility to set max try count
+    1. add possibility to set max count of tries
 
 ### Questions and help
-If you have some problems with using this library or something doesn't work correctly - just write me an email and describe your question or problem. I will try to do my best to help you and fix the problem if it is. Here is my email: pro100svitlo@gmail.com
+If you have some problems with using this library or something doesn't work correctly - just write me an email and describe your question or problem. I will try to do my best to help you and fix the problem if it exists. Here is my email: pro100svitlo@gmail.com
 
 ### Used in
 If you use this library, please, let me know (pro100svitlo@gmail.com)
