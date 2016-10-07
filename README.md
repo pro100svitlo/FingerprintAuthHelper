@@ -1,5 +1,5 @@
 # FingerprintAuthDemo
-A small library that allow You easy manage fingererprint authentication inside your Activity or Fragment on devices with fingerprint scanner and Android M and upper.
+A small library that allows You to easily manage fingererprint authentication inside your Activity or Fragment on devices with fingerprint scanner and Android M and higher.
 
 1. [Demo](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintAuthHelper)
 2. [Usage](#usage)
@@ -68,7 +68,7 @@ A small library that allow You easy manage fingererprint authentication inside y
     }
 ```
 That's pretty much all what you need to start the work!
-Full documentation and all option descriptions you can find [here](Docs.md).
+Full documentation and all options descriptions you can find [here](Docs.md).
 
 ---
 
@@ -80,7 +80,7 @@ Your activity or fragment must implement FahListener;
     @Override
     public void onFingerprintStatus(boolean authSuccessful, int errorType, CharSequence errorMess) {
         if (authSuccessful){
-            // do some stuff here in case auth was successfull
+            // do some stuff here in case auth was successful
         } else if (mFAH != null){
           // do some stuff here in case auth failed
             switch (errorType){
@@ -113,10 +113,10 @@ Your activity or fragment must implement FahListener;
 
 ### Updates
 * v.1.1.2
-    1. add possibility to set max try count
+    1. add possibility to set max count of tries
 
 ### Questions and help
-If you have some problems with using this library or something doesn't work correctly - just write me an email and describe your question or problem. I will try to do my best to help you and fix the problem if it is. Here is my email: pro100svitlo@gmail.com
+If you have some problems with using this library or something doesn't work correctly - just write me an email and describe your question or problem. I will try to do my best to help you and fix the problem if it exists. Here is my email: pro100svitlo@gmail.com
 
 ### Used in
 If you use this library, please, let me know (pro100svitlo@gmail.com)
