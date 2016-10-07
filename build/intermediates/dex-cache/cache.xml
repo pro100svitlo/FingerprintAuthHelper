@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-compat/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="7e4389bd133359a2ff88623ff1e4ff93d6e6f780">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_0b52a771711ddf70548ade24b9c1c0f04682e08a/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-core-ui/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="867dad63c33388ff8c7644b236579355036d075f">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_8f762673075074775ed25fe18c54eb46f9a82dff/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-core-utils/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="935a969265b2a166b2d20415423f5f6e90fe16e0">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_113aa5e8676124d602603ee248c2703e537dd27c/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-media-compat/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="09b462bbcb77650284bd6614f1a32f360ef369f8">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-media-compat-24.2.1_2011c771eaa7f17b1268b090265c453c21e64969/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="5f64d657e838e8375135c0f6057a7ff8fab6a50e">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_3ebd94044a3fc192d14d39a89582466068f0a154/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="94bc1dfb84dcc8b6f6f8f7cc726d7b2dd39c1574">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-24.2.1_25f36a4fc8e0681536984ce6fbd1d791f453bc32/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-core-utils/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="9c4c3bc902450c39ed54de170db4fb12aea20a35">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-utils-24.2.1_381226bd5c71caaa2018b203a1239d5d478ad378/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="d5c731fc64c03dfe04d51134955b483551c35849">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-24.2.1_9c5cd5511af21c99c7284ce524303c5465bcc9ec/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.github.pro100svitlo/fingerprintAuthHelper/1.1.2/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="de42fb31ffdf267e9744f47c484979daa566b9b2">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.github.pro100svitlo-fingerprintAuthHelper-1.1.2_b72ff13ec3c2dfc9ef695f7f65ffa2cd9c923502/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="b9a1ac78ad7ef3abedc4a4b30cd92bcacb939d1f">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-fragment-24.2.1_5a00f4b6fcd036525f79820c255dfd5f3eeb49ed/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="98e45a605cb212a1464191582929b93f193561d5">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_4267b71fa42dc29991ee65c5b94f3b00bbd02e6f/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/design/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="e03f47f3d1017a093bb3239d4ec47c3447f40744">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-design-24.2.1_19983b1e37fb34eefdf2559beb842211c17e7b56/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/SDK/extras/android/m2repository/com/android/support/support-annotations/24.2.1/support-annotations-24.2.1.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="8de3aafecbdf98a61db6427f008f2d515bcd2544">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-24.2.1_a10ffa12ffe419832d4e6f7f3a077489be9fa3e2/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-core-ui/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="e7f3132168957eefc46229fc32c3bd464642b71e">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-ui-24.2.1_ed9322e2a27f595c1d5a7284a9344c966b538d70/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-compat/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="0ecb4b595fa0f0f8018a149ace3ea6525624f94e">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-compat-24.2.1_77c8b47eea11cad5cc42f89eb554b628b9095aec/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="7521486d9bfd2cd9e756e0cf75ed7d97f2ce2d3b">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-recyclerview-v7-24.2.1_a1a4cb0ab168e6b25fe66e62d28eeb75b00ee348/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="5e2fbfaade8c640ef950db1d111c94d9549782a9">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_38fd27ac61e1a46f34ebaa34ef7fa2894dd268bf/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-v4/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-24.2.1_b880f6173ecd20dd8b01069d42e41bd2f1025450/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/support-media-compat/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="fbf8da429efd5ad21e02e3e5ecaa1efc4167878d">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_1a01fe1cc6c0334fc5d2ed1e9bd224983b8bb749/classes.dex" />
+    </item>
+    <item
+        jar="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        revision="24.0.1"
+        sha1="43b2dba6b5a0b14527961b75329d0b90025f15ea">
+        <dex dex="/Users/pro100svitlo/Android/FingerprintAuthDemo/sample/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-24.2.1_e87fa8889ceb9aae75df00b5ff3c4db8cfcf502f/classes.dex" />
+    </item>
+
+</items>

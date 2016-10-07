@@ -167,7 +167,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
             logThis("stopListening");
 
             if (mListener != null) {
-                mListener.get().onFingerprintListening(false, -1);
+                mListener.get().onFingerprintListening(false, 0);
             }
             if (errMsgId == FingerprintManager.FINGERPRINT_ERROR_LOCKOUT) {
                 saveToManyTriesStr(errString.toString());

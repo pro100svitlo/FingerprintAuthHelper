@@ -32,7 +32,7 @@ publish {
     groupId = 'com.github.pro100svitlo'
     artifactId = 'fingerprintAuthHelper'
     publishVersion = '1.1.2'
-    desc = 'A small library that allow You easy manage fingererprint authentication on devices with ' +
+    desc = 'A small library that allow You easy manage fingerprint authentication on devices with ' +
             'fingerprint scanner and Android M and upper'
     licences = ['MIT']
     website = 'https://githb.com/pro100svitlo/fingerprintauthhelper'
