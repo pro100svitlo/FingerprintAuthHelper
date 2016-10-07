@@ -91,8 +91,10 @@ isHardwareEnable()
 openSecuritySettings()
     // method, that opens android security settings activity, 
     // where user can change fingerprint settings
-    // for example if there is no saved fingerprints, you can propose user to 
-    // go to settingsActivity and set it up
+    
+showSecuritySettingsDialog()
+    // method, that opens dialog, with explanations why needs to set fingerprint and lock screen
+    // also with propose go to settingsActivity
 ```
 
 ### Callbacks:
