@@ -206,7 +206,7 @@ public void onFingerprintListening(boolean listening, long milliseconds) {
 ```
 
 ### FahSecureSettingsDialog
-
+If u need customize FahSecureSettingsDialog:
 ```sh
 mSecureSettingsDialog = new FahSecureSettingsDialog
                               .Builder(this, mFAH) (context (instance of activity), fingerprintAuthHelper)
