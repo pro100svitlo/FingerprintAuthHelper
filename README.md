@@ -127,7 +127,7 @@ Your activity or fragment must implement FahListener;
     1. add possibility to set max count of tries
 
 ### Questions and help
-If you have some problems with using this library or something doesn't work correctly - just write me an email and describe your question or problem. I will try to do my best to help you and fix the problem if it exists. Here is my email: pro100svitlo@gmail.com
+If you have some problems with using this library or something doesn't work correctly - just write me an email and describe your question or problem. I will try to do my best to help you and fix the problem if it exists. Here is my email: pro100svitlo@gmail.com. Or you also can leave an [issue here](https://github.com/pro100svitlo/FingerprintAuthHelper/issues).
 
 ### Used in
 If you use this library, please, let me know (pro100svitlo@gmail.com)
