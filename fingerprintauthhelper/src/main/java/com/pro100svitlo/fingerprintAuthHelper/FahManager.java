@@ -39,6 +39,7 @@ import javax.crypto.SecretKey;
 /**
  * Created by pro100svitlo on 10/3/16.
  */
+
 @TargetApi(Build.VERSION_CODES.M)
 public class FahManager extends FingerprintManager.AuthenticationCallback {
 
@@ -115,6 +116,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
     private boolean mLoggingEnable;
     private boolean mAfterStartListenTimeOut;
     private boolean mBroadcastRegistered;
+    private boolean mSecureElementsReady;
 
     private FahManager(Builder b){
         mContext = b.mContext;
@@ -125,9 +127,10 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         mKeyName = b.mKeyName;
         mTryTimeOutDefault = b.mTryTimeOut;
 
+        mFingerprintManager = mContext.getSystemService(FingerprintManager.class);
+        keyguardManager = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
 
-        initSecureComponents();
-        initOtherComponents();
+        initAdditionalComponents();
 
         if (isTimerActive() && !FahTimeOutService.isRunning()){
             mListener.get().onFingerprintStatus(
@@ -152,7 +155,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
             logThis("error: " + FahErrorType.getErrorNameByCode(FahErrorType.AUTH_ERROR_BASE + errMsgId) +
             " (" + errString + ")");
 
-            if (mListener != null) {
+            if (mListener != null && mTryCount > 0) {
                 mListener.get().onFingerprintStatus(
                         false,
                         FahErrorType.AUTH_ERROR_BASE + errMsgId,
@@ -207,7 +210,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
                         mContext.getString(R.string.FINGERPRINT_NOT_RECOGNIZED));
             }
         }
-        if (mMaxTryCount < DEFAULT_TRY_COUNT && mTryCount == 0){
+        if (mMaxTryCount < DEFAULT_TRY_COUNT && mTryCount <= 0){
             mListener.get().onFingerprintStatus(
                     false,
                     FahErrorType.Auth.AUTH_TO_MANY_TRIES,
@@ -311,6 +314,10 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
     }
 
     public boolean canListen(boolean showError){
+        if (!isSecureComponentsInit(showError)){
+            return false;
+        }
+
         if (isPermissionNeeded(showError)){
             return false;
         }
@@ -338,18 +345,6 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
             return false;
         }
 
-        if (!mFingerprintManager.hasEnrolledFingerprints()) {
-            if (mListener != null && showError) {
-                mListener.get().onFingerprintStatus(
-                        false,
-                        FahErrorType.General.NO_FINGERPRINTS,
-                        mContext.getString(R.string.NO_FINGERPRINTS));
-            }
-            logThis("canListen failed. reason: " +
-                    mContext.getString(R.string.NO_FINGERPRINTS));
-            return false;
-        }
-
         return true;
     }
 
@@ -360,68 +355,78 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         return mFingerprintManager.isHardwareDetected();
     }
 
+    public boolean isFingerprintEnrolled(){
+        return isFingerprintEnrolled(false);
+    }
+
     public long getTimeOutLeft(){
         return mTimeOutLeft;
     }
 
-    private void initSecureComponents(){
-        logThis("initSecureComponents start");
-        mFingerprintManager = mContext.getSystemService(FingerprintManager.class);
-
-        keyguardManager =
-                (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
-
-        try {
-            mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
-                    + KeyProperties.BLOCK_MODE_CBC + "/"
-                    + KeyProperties.ENCRYPTION_PADDING_PKCS7);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            throw new RuntimeException("Failed to get an instance of Cipher", e);
-        }
-
-        try {
-            mKeyStore = KeyStore.getInstance("AndroidKeyStore");
-        } catch (Exception e) {
-            throw new RuntimeException("create keyStore failed", e);
-        }
-        try {
-            mKeyGenerator = KeyGenerator
-                    .getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
-        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-            throw new RuntimeException("Failed to get an instance of KeyGenerator", e);
-        }
-
-        try {
-            mKeyStore.load(null);
-            // Set the alias of the entry in Android KeyStore where the key will appear
-            // and the constrains (purposes) in the constructor of the Builder
-
-            KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(mKeyName,
-                    KeyProperties.PURPOSE_ENCRYPT |
-                            KeyProperties.PURPOSE_DECRYPT)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                    // Require the user to authenticate with a fingerprint to authorize every use
-                    // of the key
-                    .setUserAuthenticationRequired(true)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7);
-
-            // This is a workaround to avoid crashes on devices whose API level is < 24
-            // because KeyGenParameterSpec.Builder#setInvalidatedByBiometricEnrollment is only
-            // visible on API level +24.
-            // Ideally there should be a compat library for KeyGenParameterSpec.Builder but
-            // which isn't available yet.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                builder.setInvalidatedByBiometricEnrollment(true);
+    private boolean isSecureComponentsInit(boolean showError){
+        logThis("isSecureComponentsInit start");
+        if (isFingerprintEnrolled(showError) && !mSecureElementsReady) {
+            try {
+                mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
+                        + KeyProperties.BLOCK_MODE_CBC + "/"
+                        + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+                throw new RuntimeException("Failed to get an instance of Cipher", e);
             }
-            mKeyGenerator.init(builder.build());
-            mKeyGenerator.generateKey();
-        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException
-                | CertificateException | IOException e) {
-            throw new RuntimeException(e);
+
+            try {
+                mKeyStore = KeyStore.getInstance("AndroidKeyStore");
+            } catch (Exception e) {
+                throw new RuntimeException("create keyStore failed", e);
+            }
+            try {
+                mKeyGenerator = KeyGenerator
+                        .getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+            } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+                throw new RuntimeException("Failed to get an instance of KeyGenerator", e);
+            }
+
+            try {
+                mKeyStore.load(null);
+                // Set the alias of the entry in Android KeyStore where the key will appear
+                // and the constrains (purposes) in the constructor of the Builder
+
+                KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(mKeyName,
+                        KeyProperties.PURPOSE_ENCRYPT |
+                                KeyProperties.PURPOSE_DECRYPT)
+                        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                        // Require the user to authenticate with a fingerprint to authorize every use
+                        // of the key
+                        .setUserAuthenticationRequired(true)
+                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7);
+
+                // This is a workaround to avoid crashes on devices whose API level is < 24
+                // because KeyGenParameterSpec.Builder#setInvalidatedByBiometricEnrollment is only
+                // visible on API level +24.
+                // Ideally there should be a compat library for KeyGenParameterSpec.Builder but
+                // which isn't available yet.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    builder.setInvalidatedByBiometricEnrollment(true);
+                }
+                try {
+                    mKeyGenerator.init(builder.build());
+                    mKeyGenerator.generateKey();
+                } catch (RuntimeException e){
+                    mSecureElementsReady = false;
+                    logThis("isSecureComponentsInit failed. Reason: " + e.getMessage());
+                    return false;
+                }
+            } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException
+                    | CertificateException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            mSecureElementsReady = true;
         }
+        logThis("mSecureElementsReady = " + mSecureElementsReady);
+        return mSecureElementsReady;
     }
 
-    private void initOtherComponents(){
+    private void initAdditionalComponents(){
         mShp = mContext.getSharedPreferences(mContext.getString(R.string.fah_app_name), Context.MODE_PRIVATE);
         mEditor = mShp.edit();
 
@@ -462,12 +467,28 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         return true;
     }
 
+    private boolean isFingerprintEnrolled(boolean showError){
+        if (!mFingerprintManager.hasEnrolledFingerprints()) {
+            if (mListener != null && showError) {
+                mListener.get().onFingerprintStatus(
+                        false,
+                        FahErrorType.General.NO_FINGERPRINTS,
+                        mContext.getString(R.string.NO_FINGERPRINTS));
+            }
+            logThis("canListen failed. reason: " +
+                    mContext.getString(R.string.NO_FINGERPRINTS));
+            mSecureElementsReady = false;
+            return false;
+        }
+        return true;
+    }
+
     private void registerBroadcast(boolean register){
         if (mTimeOutLeft > 0 && register && !mBroadcastRegistered){
             logThis("mBroadcastRegistered = " + true);
             mBroadcastRegistered = true;
             mContext.registerReceiver(timeOutBroadcast, new IntentFilter(FahTimeOutService.TIME_OUT_BROADCAST));
-        } else if (mTimeOutLeft > 0 && !register && mBroadcastRegistered){
+        } else if (!register && mBroadcastRegistered){
             logThis("mBroadcastRegistered = " + false);
             mBroadcastRegistered = false;
             mContext.unregisterReceiver(timeOutBroadcast);

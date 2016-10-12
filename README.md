@@ -19,7 +19,7 @@ Min sdk version 14.
 ##### Add the dependencies to your gradle file:
 ```sh
     dependencies {
-        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.3'
+        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.4'
     }
 ```
 
@@ -119,6 +119,10 @@ Your activity or fragment must implement FahListener;
 ```
 
 ### Updates
+* v.1.1.4
+    1. fix crashes on Sumsung devices
+    2. add method isFingerprintEnrolled() to FingerprintAuthHelper
+    3. small bugfix
 * v.1.1.3
     1. init context must be instance of Activity
     2. add method showSecuritySettingsDialog() to FingerprintAuthHelper

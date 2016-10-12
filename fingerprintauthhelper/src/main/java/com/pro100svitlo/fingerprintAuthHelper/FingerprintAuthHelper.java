@@ -81,6 +81,7 @@ public class FingerprintAuthHelper {
     private boolean mCanListenBySystem;
     private boolean mIsHardwareEnable;
     private boolean mIsListening;
+    private boolean mIsFingerprintEnrolled;
 
     private FingerprintAuthHelper(Builder b) {
         mContext = b.mContext;
@@ -225,6 +226,16 @@ public class FingerprintAuthHelper {
         mIsHardwareEnable = mFahManager.isHardwareEnabled();
         logThis("mIsHardwareEnable = " + mIsHardwareEnable);
         return mIsHardwareEnable;
+    }
+
+    public boolean isFingerprintEnrolled(){
+        if (mFahManager == null){
+            serviceNotEnable("isFingerprintEnrolled");
+            return false;
+        }
+        mIsFingerprintEnrolled = mFahManager.isFingerprintEnrolled();
+        logThis("mIsFingerprintEnrolled = " + mIsFingerprintEnrolled);
+        return mIsFingerprintEnrolled;
     }
 
     public void openSecuritySettings(){

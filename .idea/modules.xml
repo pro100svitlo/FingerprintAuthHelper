@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FingerprintAuthDemo.iml" filepath="$PROJECT_DIR$/FingerprintAuthDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FingerprintAuthHelper.iml" filepath="$PROJECT_DIR$/FingerprintAuthHelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/fingerprintauthhelper/fingerprintauthhelper.iml" filepath="$PROJECT_DIR$/fingerprintauthhelper/fingerprintauthhelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
     </modules>

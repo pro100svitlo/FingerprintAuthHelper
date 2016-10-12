@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.pro100svitlo.fingerprintAuthHelper.FahErrorType;
 import com.pro100svitlo.fingerprintAuthHelper.FahListener;
-import com.pro100svitlo.fingerprintAuthHelper.FahSecureSettingsDialog;
 import com.pro100svitlo.fingerprintAuthHelper.FingerprintAuthHelper;
 
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,6 @@ public class MainActivity extends AppCompatActivity implements FahListener {
     private final int TIME_OUT = 500;
 
     private FingerprintAuthHelper mFAH;
-    private FahSecureSettingsDialog mSecureSettingsDialog;
 
     private ImageView mFingerprintIcon;
     private TextView mFingerprintText;
@@ -47,10 +45,10 @@ public class MainActivity extends AppCompatActivity implements FahListener {
 
 
         mFAH = new FingerprintAuthHelper.Builder(this, this)
-                .setTryTimeOut(2 * 60 * 1000)
+                .setTryTimeOut(2 * 45 * 1000)
                 .setKeyName(MainActivity.class.getSimpleName())
                 .setLoggingEnable(true)
-                .setMaxTryCount(1)
+                .setMaxTryCount(3)
                 .build();
         boolean isHardwareEnable = mFAH.isHardwareEnable();
 

@@ -88,6 +88,11 @@ isHardwareEnable()
     // return true if everything is ok and hardware is enabled
     // return false if hardware is disabled or if device does not support Fingerprint technology
 
+isFingerprintEnrolled()
+    // method that checks if device has enrolled fingerprints
+    // return true if at least one fingerprint enrolled
+    // return false if no fingerprints enrolled or if device does not support Fingerprint technology
+
 openSecuritySettings()
     // method, that opens android security settings activity, 
     // where user can change fingerprint settings
