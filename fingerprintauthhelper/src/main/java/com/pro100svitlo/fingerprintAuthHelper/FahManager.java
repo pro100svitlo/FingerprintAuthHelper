@@ -250,6 +250,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
             }
             mIsListening = true;
         }
+        registerBroadcast(true);
         return mIsListening;
     }
 
@@ -260,6 +261,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
             mCancellationSignal = null;
             mIsListening = false;
         }
+        registerBroadcast(false);
         return mIsListening;
     }
 
@@ -271,8 +273,6 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         outState.putBoolean(KEY_LOGGING_ENABLE, mLoggingEnable);
         outState.putString(KEY_SECURE_KEY_NAME, mKeyName);
         outState.putBoolean(KEY_IS_LISTENING, mIsListening);
-
-        registerBroadcast(false);
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -287,8 +287,6 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
         if (mTimeOutLeft > 0 && mListener.get() != null){
             mListener.get().onFingerprintListening(false, mTimeOutLeft);
         }
-
-        registerBroadcast(true);
     }
 
     public void onDestroy(){
@@ -488,7 +486,7 @@ public class FahManager extends FingerprintManager.AuthenticationCallback {
             logThis("mBroadcastRegistered = " + true);
             mBroadcastRegistered = true;
             mContext.registerReceiver(timeOutBroadcast, new IntentFilter(FahTimeOutService.TIME_OUT_BROADCAST));
-        } else if (!register && mBroadcastRegistered){
+        } else if (mTimeOutLeft > 0 && !register && mBroadcastRegistered){
             logThis("mBroadcastRegistered = " + false);
             mBroadcastRegistered = false;
             mContext.unregisterReceiver(timeOutBroadcast);

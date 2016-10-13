@@ -107,7 +107,7 @@ public class FingerprintAuthHelper {
         } if (!canListenByUser()){
             return false;
         }
-        mIsListening = mTimeOutLeft <= 0 && mFahManager.startListening();
+        mIsListening = mFahManager.startListening() && mTimeOutLeft <= 0;
         logThis("mIsListening = " + mIsListening);
         return mIsListening;
     }
