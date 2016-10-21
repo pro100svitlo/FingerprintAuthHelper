@@ -5,7 +5,6 @@ Min sdk version 14.
 1. [Demo app](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintauthdemo)
 2. [Usage](#usage)
 3. [Documentation](Docs.md)
-3. [Callbacks](#callbacks)
 4. [Updates](#updates)
 5. [Used In](#used-in)
 6. [Questions and help](#questions-and-help)
@@ -66,17 +65,7 @@ Min sdk version 14.
         super.onDestroy();
         mFAH.onDestroy();
     }
-```
-That's pretty much all what you need to start the work!
-Full documentation and all options descriptions you can find [here](Docs.md).
-
----
-
-### Callbacks:
-
-Your activity or fragment must implement FahListener;
- 
-```sh
+    
     @Override
     public void onFingerprintStatus(boolean authSuccessful, int errorType, CharSequence errorMess) {
         // authSuccessful - boolean that shows auth status
@@ -117,6 +106,10 @@ Your activity or fragment must implement FahListener;
         }
     }
 ```
+That's pretty much all what you need to start the work!
+Full documentation and all options descriptions you can find [here](Docs.md).
+
+---
 
 ### Updates
 * v.1.1.5
