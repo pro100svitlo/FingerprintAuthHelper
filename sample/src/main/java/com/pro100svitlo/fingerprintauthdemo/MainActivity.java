@@ -9,13 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.pro100svitlo.fingerprintAuthHelper.FahErrorType;
-import com.pro100svitlo.fingerprintAuthHelper.FahListener;
-import com.pro100svitlo.fingerprintAuthHelper.FingerprintAuthHelper;
 
 import java.util.concurrent.TimeUnit;
 
@@ -45,10 +42,11 @@ public class MainActivity extends AppCompatActivity implements FahListener {
 
 
         mFAH = new FingerprintAuthHelper.Builder(this, this)
-                .setTryTimeOut(2 * 45 * 1000)
+                .setTryTimeOut(2 *45 * 1000)
                 .setKeyName(MainActivity.class.getSimpleName())
                 .setLoggingEnable(true)
-                .setMaxTryCount(3)
+                // TODO: 11/23/16
+//                .setMaxTryCount(3)
                 .build();
         boolean isHardwareEnable = mFAH.isHardwareEnable();
 
@@ -88,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements FahListener {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         mFAH.stopListening();
     }
 
@@ -118,12 +116,13 @@ public class MainActivity extends AppCompatActivity implements FahListener {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(new Intent(MainActivity.this, SecondActivity.class));
+                    goToSecondActivity();
                 }
             }, TIME_OUT);
         } else if (mFAH != null){
-            errorMess = String.format(getString(R.string.appCodeActivity_tv_fingerprintTryCount),
-                    errorMess, mFAH.getTryCountLeft());
+//            errorMess = String.format(getString(R.string.appCodeActivity_tv_fingerprintTryCount),
+//                    errorMess, mFAH.getTryCountLeft());
+            // TODO: 11/23/16
             Toast.makeText(this, errorMess, Toast.LENGTH_SHORT).show();
             switch (errorType){
                 case FahErrorType.General.LOCK_SCREEN_DISABLED:
@@ -141,6 +140,10 @@ public class MainActivity extends AppCompatActivity implements FahListener {
                     break;
             }
         }
+    }
+
+    private void goToSecondActivity() {
+        startActivity(new Intent(MainActivity.this, SecondActivity.class));
     }
 
     @Override
@@ -173,5 +176,10 @@ public class MainActivity extends AppCompatActivity implements FahListener {
                 TimeUnit.MILLISECONDS.toSeconds(millis) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
         );
+    }
+
+    public void onEnterOtherMethodClick(View view) {
+        mFAH.cleanTimeOut();
+        goToSecondActivity();
     }
 }
