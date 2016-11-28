@@ -14,6 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pro100svitlo.fingerprintAuthHelper.FahErrorType;
+import com.pro100svitlo.fingerprintAuthHelper.FahListener;
+import com.pro100svitlo.fingerprintAuthHelper.FingerprintAuthHelper;
+
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements FahListener {
@@ -45,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements FahListener {
                 .setTryTimeOut(2 *45 * 1000)
                 .setKeyName(MainActivity.class.getSimpleName())
                 .setLoggingEnable(true)
-                // TODO: 11/23/16
-//                .setMaxTryCount(3)
                 .build();
         boolean isHardwareEnable = mFAH.isHardwareEnable();
 
@@ -120,12 +122,9 @@ public class MainActivity extends AppCompatActivity implements FahListener {
                 }
             }, TIME_OUT);
         } else if (mFAH != null){
-//            errorMess = String.format(getString(R.string.appCodeActivity_tv_fingerprintTryCount),
-//                    errorMess, mFAH.getTryCountLeft());
-            // TODO: 11/23/16
             Toast.makeText(this, errorMess, Toast.LENGTH_SHORT).show();
             switch (errorType){
-                case FahErrorType.General.LOCK_SCREEN_DISABLED:
+                case FahErrorType.General.HARDWARE_DISABLED:
                 case FahErrorType.General.NO_FINGERPRINTS:
                     mFAH.showSecuritySettingsDialog();
                     break;
@@ -142,10 +141,6 @@ public class MainActivity extends AppCompatActivity implements FahListener {
         }
     }
 
-    private void goToSecondActivity() {
-        startActivity(new Intent(MainActivity.this, SecondActivity.class));
-    }
-
     @Override
     public void onFingerprintListening(boolean listening, long milliseconds) {
         if (listening){
@@ -157,6 +152,10 @@ public class MainActivity extends AppCompatActivity implements FahListener {
             mFingerprintText.setTextColor(mFpColorError);
             mFingerprintText.setText(getPrettyTime(mFingerprintRetryStr ,milliseconds));
         }
+    }
+
+    private void goToSecondActivity() {
+        startActivity(new Intent(MainActivity.this, SecondActivity.class));
     }
 
     private void setFingerprintListening(){

@@ -21,10 +21,9 @@ android {
     lintOptions {
         abortOnError false
     }
-    productFlavors {
-        official
-        kotlin
-    }
+}
+task javadoc(type: Javadoc) {
+    excludes = ['**/*.kt'] // < ---- Exclude all kotlin files from javadoc file.
 }
 
 dependencies {
@@ -39,7 +38,7 @@ dependencies {
 publish {
     groupId = 'com.github.pro100svitlo'
     artifactId = 'fingerprintAuthHelper'
-    publishVersion = '1.1.6'
+    publishVersion = '1.1.7'
     desc = 'A small library that allow You easy manage fingerprint authentication on devices with ' +
             'fingerprint scanner on Android M and upper'
     licences = ['MIT']

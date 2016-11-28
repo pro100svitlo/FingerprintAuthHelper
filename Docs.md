@@ -16,27 +16,25 @@ mFAH = new FingerprintAuthHelper.Builder(this, this)
                 .setLoggingEnable(true)                  
                     //optional, false by default 
                 .setTryTimeOut(2 * 60 * 1000)
-                    //optional, 60000 milliseconds by default, in case you need custom timeout,
-                    //must be >= 60000 milliseconds
-                .setMaxTryCount(3)
-                    //optional, 5 by default, must be: 0 < MaxTryCount <= 5
+                    //optional, 45000 milliseconds by default, in case you need custom timeout,
+                    //must be >= 45000 milliseconds
                 .build();
 ```
 
 ###Main methods
 ```sh
-startListening() 
-    // method must be called in onResume or when you need to start listening 
+startListening()
+    // method must be called in onResume or when you need to start listening
     // (for example inside onClick)
-    // return true if device is listening 
+    // return true if device is listening
     // return false if device is not listening. Reason can be different. See logs for more details
 
-stopListening() 
+stopListening()
     // method must be called in onPause or when you need to stop listening
-    // return true if device is still listening 
+    // return true if device is still listening
     // return false if device is not listening
 
-onDestroy() 
+onDestroy()
     // method must be called in onDestroy or when you leave activity/fragment/dialog
     // return true if onDestrow was successful
     // return false if device does not support Fingerprint technology
@@ -55,7 +53,7 @@ onRestoreInstanceState()
     // return false if device does not support Fingerprint technology
 
 setCanListenByUser(boolean canListen)
-    // in case you need to disable usage of fingerprint auth 
+    // in case you need to disable usage of fingerprint auth
     // (for example user disables it in your app settings)
 
 canListenByUser()
@@ -67,15 +65,24 @@ canListen()
     // return true if device can listen
     // return false if device can not listen. Reason can be different. See logs for more details
     // (for example if setCanListenByUser(false), canListen() will return false)
-    
+
 isListening()
     // in case you just need to know if devise listening for fingerprint rigth now
-    // return true if device is listening 
+    // return true if device is listening
     // return false if device is not listening. Reason can be different. See logs for more details
 
-getTryCountLeft()
+getTriesCountLeft()
     // in case you need to know how many tries are left
+    // maxCount - default 5, every fingerprintError decrease counter.
+    // when startListening, stopListening, authSuccessful - maxCount set to default
     // return int
+
+cleanTimeOut()
+    // in case you want to authenticate with other method after 5 unsuccessful tries fingerprintAuth,
+    // and you need "drop" fingerprint timeout
+    // if timeOut service is running and passed time is bigger then default timeOut (45 sec) - this method
+    // will stop timeoutservice; if passed time is less than default timeout - it will setUp leftTime as diff
+    // between default timeout and passed time
 
 getTimeOutLeft()
     // in case there were too many tries and timer is turned on 

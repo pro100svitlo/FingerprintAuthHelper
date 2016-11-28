@@ -8,6 +8,11 @@
         android:allowBackup="true"
         android:supportsRtl="true"
         >
+        <service
+            android:name=".FahTimeOutService"
+            android:exported="true"
+            android:enabled="true"
+            />
     </application>
 
 </manifest>

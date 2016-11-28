@@ -5,11 +5,9 @@ Min sdk version 14.
 1. [Demo app](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintauthdemo)
 2. [Usage](#usage)
 3. [Documentation](Docs.md)
-3. [Callbacks](#callbacks)
 4. [Updates](#updates)
-5. [Used In](#used-in)
-6. [Questions and help](#questions-and-help)
-7. [License](#license)
+5. [Questions and help](#questions-and-help)
+6. [License](#license)
 
 ![alt text](screenshots/sc_0.png "Touch sensor")
 ![alt text](screenshots/sc_1.png "Try in")
@@ -19,7 +17,7 @@ Min sdk version 14.
 ##### Add the dependencies to your gradle file:
 ```sh
     dependencies {
-        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.5'
+        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.7'
     }
 ```
 
@@ -28,7 +26,7 @@ Min sdk version 14.
 ```sh
 
     private FingerprintAuthHelper mFAH;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     ...
@@ -42,47 +40,37 @@ Min sdk version 14.
             //otherwise do
         }
     }
-    
+
     ...
-    
+
    @Override
     protected void onResume() {
         super.onResume();
         mFAH.startListening();
     }
- 
+
     ...
-    
+
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         mFAH.stopListening();
     }
- 
+
     ...
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mFAH.onDestroy();
     }
-```
-That's pretty much all what you need to start the work!
-Full documentation and all options descriptions you can find [here](Docs.md).
 
----
-
-### Callbacks:
-
-Your activity or fragment must implement FahListener;
- 
-```sh
     @Override
     public void onFingerprintStatus(boolean authSuccessful, int errorType, CharSequence errorMess) {
         // authSuccessful - boolean that shows auth status
         // errorType - if auth was failed, you can catch error type
         // errorMess - if auth was failed, errorMess will tell you (and user) the reason
-        
+
         if (authSuccessful){
             // do some stuff here in case auth was successful
         } else if (mFAH != null){
@@ -106,7 +94,7 @@ Your activity or fragment must implement FahListener;
     public void onFingerprintListening(boolean listening, long milliseconds) {
         // listening - status of fingerprint listen process
         // milliseconds - timeout value, will be > 0, if listening = false & errorType = AUTH_TO_MANY_TRIES
-        
+
         if (listening){
             //add some code here
         } else {
@@ -117,8 +105,17 @@ Your activity or fragment must implement FahListener;
         }
     }
 ```
+That's pretty much all what you need to start the work!
+Full documentation and all options descriptions you can find [here](Docs.md).
+
+---
 
 ### Updates
+* v.1.1.7
+    1. new function cleanTimeOut() - in case you authinticate with other method. More details in [docs](Docs.md).
+    2. remove possibility to set max try count (becouse Fingerprint API update :)
+    3. now on Kotlin :)
+    4. refactoring
 * v.1.1.5
     1. refactoring
     2. small bugfix
@@ -135,13 +132,6 @@ Your activity or fragment must implement FahListener;
 
 ### Questions and help
 If you have some problems with using this library or something doesn't work correctly - just write me an email and describe your question or problem. I will try to do my best to help you and fix the problem if it exists. Here is my email: pro100svitlo@gmail.com. Or you also can leave an [issue here](https://github.com/pro100svitlo/FingerprintAuthHelper/issues).
-
-### Used in
-If you use this library, please, let me know (pro100svitlo@gmail.com)
-Thanks!
-
-1. [Bank of Georgia (TskApp)]
-
 
 ### License
 The MIT License (MIT)
