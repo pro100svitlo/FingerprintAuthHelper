@@ -17,7 +17,7 @@ Min sdk version 14.
 ##### Add the dependencies to your gradle file:
 ```sh
     dependencies {
-        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.7'
+        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.2.0'
     }
 ```
 
