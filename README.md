@@ -111,6 +111,8 @@ Full documentation and all options descriptions you can find [here](Docs.md).
 ---
 
 ### Updates
+* v.1.2.0
+    1. stability improvements
 * v.1.1.7
     1. new function cleanTimeOut() - in case you authinticate with other method. More details in [docs](Docs.md).
     2. remove possibility to set max try count (becouse Fingerprint API update :)
