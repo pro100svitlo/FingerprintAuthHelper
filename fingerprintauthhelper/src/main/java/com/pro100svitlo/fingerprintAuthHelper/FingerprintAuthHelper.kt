@@ -7,7 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import java.lang.ref.WeakReference
+import java.lang.ref.SoftReference
 
 /**
  * Created by pro100svitlo on 11/23/16.
@@ -33,7 +33,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
         mLoggingEnable = b.mLoggingEnable
 
         if (isSdkVersionOk()) {
-            mFahManager = FahManager.Builder(b.mContext!!, b.mListener.get()!!)
+            mFahManager = FahManager.Builder(b.mContext!!, b.mListener?.get()!!)
                     .setKeyName(b.mKeyName)
                     .setLoggingEnable(mLoggingEnable)
                     .setTryTimeOut(b.mTimeOut)
@@ -233,7 +233,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
 
         internal var mTimeOut = FahConstants.DEF_TRY_TIME_OUT
         internal var mContext: Context? = null
-        internal val mListener: WeakReference<FahListener>
+        internal val mListener: SoftReference<FahListener>? = SoftReference(l)
         internal var mKeyName = FahConstants.TAG
         internal var mLoggingEnable: Boolean = false
 
@@ -244,7 +244,6 @@ class FingerprintAuthHelper private constructor(b: Builder) {
                 throw IllegalArgumentException("Context for FingerprintAuthHelper must be " + "instance of Activity")
             }
             mContext = c
-            mListener = WeakReference(l)
         }
 
         fun setKeyName(keyName: String): Builder {

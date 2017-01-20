@@ -17,7 +17,7 @@ import android.support.annotation.NonNull
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import java.io.IOException
-import java.lang.ref.WeakReference
+import java.lang.ref.SoftReference
 import java.security.*
 import java.security.cert.CertificateException
 import javax.crypto.Cipher
@@ -33,14 +33,10 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
 
     class Builder(@NonNull internal val mContext: Context, l: FahListener) {
 
-        internal val mListener: WeakReference<FahListener>
+        internal val mListener: SoftReference<FahListener>? = SoftReference(l)
         internal var mKeyName: String? = null
         internal var mTryTimeOut: Long = 0
         internal var mLoggingEnable: Boolean = false
-
-        init {
-            mListener = WeakReference(l)
-        }
 
         fun setKeyName(keyName: String): Builder {
             mKeyName = keyName
@@ -69,8 +65,8 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
     private val KEY_IS_LISTENING = "KEY_IS_LISTENING"
     private val TRY_LEFT_DEFAULT = 5
 
-    private var mContext: WeakReference<Context>? = null
-    private var mListener: WeakReference<FahListener>? = null
+    private var mContext: SoftReference<Context>? = null
+    private var mListener: SoftReference<FahListener>? = null
     private var mFingerprintManager: FingerprintManager? = null
     private var mCipher: Cipher? = null
     private var mKeyStore: KeyStore? = null
@@ -95,7 +91,7 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
     private var mSecureElementsReady: Boolean = false
 
     private constructor(b: Builder):this(){
-        mContext = WeakReference(b.mContext)
+        mContext = SoftReference(b.mContext)
         mListener = b.mListener
         mLoggingEnable = b.mLoggingEnable
         mKeyName = b.mKeyName
@@ -328,25 +324,38 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
                 mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
                         + KeyProperties.BLOCK_MODE_CBC + "/"
                         + KeyProperties.ENCRYPTION_PADDING_PKCS7)
-            } catch (e: NoSuchAlgorithmException) {
-                throw RuntimeException("Failed to get an instance of Cipher", e)
-            } catch (e: NoSuchPaddingException) {
-                throw RuntimeException("Failed to get an instance of Cipher", e)
+            } catch (e: Exception) {
+                when(e){
+                    is NoSuchAlgorithmException, is NoSuchPaddingException ->{
+                        logThis("Failed to get an instance of Cipher: " + e.message)
+                        return false
+                    } else -> {
+                        logThis("Unexpected exception. Reason: " + e.message)
+                        return false
+                    }
+                }
             }
 
             try {
                 mKeyStore = KeyStore.getInstance("AndroidKeyStore")
             } catch (e: Exception) {
-                throw RuntimeException("create keyStore failed", e)
+                logThis("create keyStore failed: " + e.message)
+                return false
             }
 
             try {
                 mKeyGenerator = KeyGenerator
                         .getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
             } catch (e: NoSuchAlgorithmException) {
-                throw RuntimeException("Failed to get an instance of KeyGenerator", e)
-            } catch (e: NoSuchProviderException) {
-                throw RuntimeException("Failed to get an instance of KeyGenerator", e)
+                when(e){
+                    is NoSuchAlgorithmException, is NoSuchProviderException ->{
+                        logThis("Failed to get an instance of KeyGenerator: " + e.message)
+                        return false
+                    } else -> {
+                        logThis("Unexpected exception. Reason: " + e.message)
+                        return false
+                    }
+                }
             }
 
             try {
@@ -373,20 +382,23 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
                 try {
                     mKeyGenerator!!.init(builder.build())
                     mKeyGenerator!!.generateKey()
-                } catch (e: RuntimeException) {
+                } catch (e: Exception) {
                     mSecureElementsReady = false
                     logThis("isSecureComponentsInit failed. Reason: " + e.message)
                     return false
                 }
 
-            } catch (e: NoSuchAlgorithmException) {
-                throw RuntimeException(e)
-            } catch (e: InvalidAlgorithmParameterException) {
-                throw RuntimeException(e)
-            } catch (e: CertificateException) {
-                throw RuntimeException(e)
-            } catch (e: IOException) {
-                throw RuntimeException(e)
+            } catch (e: Exception) {
+                when (e){
+                    is NoSuchAlgorithmException, is InvalidAlgorithmParameterException,
+                            is CertificateException, is IOException ->{
+                        logThis("isSecureComponentsInit failed. Reason: " + e.message)
+                        return false
+                    } else -> {
+                        logThis("Unexpected exception. Reason: " + e.message)
+                        return false
+                    }
+                }
             }
 
             mSecureElementsReady = true
@@ -407,23 +419,20 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
             mCipher!!.init(Cipher.ENCRYPT_MODE, key)
             mCryptoObject = FingerprintManager.CryptoObject(mCipher)
             return true
-        } catch (e: KeyPermanentlyInvalidatedException) {
-            logThis("initCipher failed. Reason: " + e.message)
-            return false
-        } catch (e: KeyStoreException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: CertificateException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: UnrecoverableKeyException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: IOException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: NoSuchAlgorithmException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: InvalidKeyException) {
-            throw RuntimeException("Failed to init Cipher", e)
+        } catch (ex: Exception) {
+            when(ex) {
+                is KeyPermanentlyInvalidatedException, is KeyStoreException,
+                is CertificateException, is UnrecoverableKeyException,
+                is IOException, is NoSuchAlgorithmException,
+                is InvalidKeyException -> {
+                    logThis("initCipher failed. Reason: " + ex.message)
+                    return false
+                } else -> {
+                    logThis("Unexpected exception. Reason: " + ex.message)
+                    return false
+                }
+            }
         }
-
     }
 
     private fun isPermissionNeeded(showError: Boolean): Boolean {
