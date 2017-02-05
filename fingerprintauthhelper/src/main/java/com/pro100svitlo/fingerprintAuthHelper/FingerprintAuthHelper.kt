@@ -6,8 +6,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.annotation.NonNull
 import android.util.Log
+import java.lang.ref.WeakReference
 
 /**
  * Created by pro100svitlo on 11/23/16.
@@ -22,19 +22,23 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     private var mTriesCountLeft: Int = 0
     private var mLoggingEnable = false
     private var mCanListenByUser = true
-    private var mCanListenBySystem = false
-    private var mIsHardwareEnable = false
-    private var mIsListening = false
-    private var mIsFingerprintEnrolled = false
+    private var mCanListenBySystem: Boolean = false
+    private var mIsHardwareEnable: Boolean = false
+    private var mIsListening: Boolean = false
+    private var mIsFingerprintEnrolled: Boolean = false
     private var mIsTimeOutCleaned = false
 
     init {
-        mContext = b.mContext
+        mContext = b.mContext!!
         mLoggingEnable = b.mLoggingEnable
 
         if (isSdkVersionOk()) {
-            mFahManager = FahManager(b.mContext!!, b.mListener, b.mKeyName, mLoggingEnable, b.mTimeOut)
-            mTimeOutLeft = mFahManager!!.mTimeOutLeft
+            mFahManager = FahManager.Builder(b.mContext!!, b.mListener.get()!!)
+                    .setKeyName(b.mKeyName)
+                    .setLoggingEnable(mLoggingEnable)
+                    .setTryTimeOut(b.mTimeOut)
+                    .build()
+            mTimeOutLeft = mFahManager!!.getTimeOutLeft()
         }
     }
 
@@ -91,7 +95,6 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     fun onDestroy(): Boolean {
         logThis("onDestroy called")
         mContext = null
-
         if (mFahManager == null) {
             serviceNotEnable("onDestroy")
             return false
@@ -144,7 +147,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             serviceNotEnable("getTimeOutLeft")
             return -1
         }
-        mTimeOutLeft = mFahManager!!.mTimeOutLeft
+        mTimeOutLeft = mFahManager!!.getTimeOutLeft()
         logThis("timeOutLeft = $mTimeOutLeft millisecond")
         return mTimeOutLeft
     }
@@ -155,7 +158,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             serviceNotEnable("getTriesCountLeft")
             return 0
         }
-        mTriesCountLeft = mFahManager!!.mTriesCountLeft
+        mTriesCountLeft = mFahManager!!.getTriesCountLeft()
         logThis("triesCountLeft = $mTriesCountLeft")
         return mTriesCountLeft
     }
@@ -194,15 +197,15 @@ class FingerprintAuthHelper private constructor(b: Builder) {
 
     fun openSecuritySettings() {
         logThis("openSecuritySettings called")
-        mContext?.startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
+        mContext!!.startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
     }
 
     fun showSecuritySettingsDialog() {
-        if (mFahSecurityDialog == null && mContext != null) {
+        if (mFahSecurityDialog == null) {
             mFahSecurityDialog = FahSecureSettingsDialog.Builder(mContext!!, this)
                     .build()
         }
-        mFahSecurityDialog?.show()
+        mFahSecurityDialog!!.show()
     }
 
     private fun isSdkVersionOk(): Boolean {
@@ -211,23 +214,26 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             logThis("sdkVersionOk")
             return true
         }
-        logThis("fingerprintAuthHelper cant work with sdk version < 23 (Android M)")
+
+        Log.d(FahConstants.TAG, "fingerprintAuthHelper cant work with sdk version < 23 (Android M)")
         return false
     }
 
     private fun logThis(mess: String) {
-        if (mLoggingEnable) Log.d(FahConstants.TAG, mess)
+        if (mLoggingEnable) {
+            Log.d(FahConstants.TAG, mess)
+        }
     }
 
     private fun serviceNotEnable(methodName: String) {
         logThis("method '$methodName' can't be finished, because of fingerprintService not enable")
     }
 
-    class Builder(@NonNull c: Context, l: FahListener) {
+    class Builder(c: Context, l: FahListener) {
 
         internal var mTimeOut = FahConstants.DEF_TRY_TIME_OUT
         internal var mContext: Context? = null
-        internal val mListener: FahListener? = l
+        internal val mListener: WeakReference<FahListener>
         internal var mKeyName = FahConstants.TAG
         internal var mLoggingEnable: Boolean = false
 
@@ -235,9 +241,10 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             if (c is Activity) {
                 mContext = c
             } else {
-                throw IllegalArgumentException("Context for FingerprintAuthHelper must be instance of Activity")
+                throw IllegalArgumentException("Context for FingerprintAuthHelper must be " + "instance of Activity")
             }
             mContext = c
+            mListener = WeakReference(l)
         }
 
         fun setKeyName(keyName: String): Builder {
