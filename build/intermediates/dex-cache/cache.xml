@@ -142,7 +142,7 @@
         jumboMode="false"
         optimize="true"
         revision="24.0.2"
-        sha1="c69fdb4f6cb304ebf671eb70e7bf1c3ac3d93b06">
+        sha1="7a0cc09f66b980a6447d90dfb43a544b638b1dd8">
         <dex dex="/Users/pro100svitlo/Android/Projects/FingerprintAuthHelper/sample/build/intermediates/pre-dexed/debug/FingerprintAuthHelper-fingerprintauthhelper-unspecified_db0bb367de5f7757cbece783648a2b17e63acaba.jar" />
     </item>
     <item

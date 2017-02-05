@@ -17,7 +17,7 @@ import android.support.annotation.NonNull
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import java.io.IOException
-import java.lang.ref.WeakReference
+import java.lang.ref.SoftReference
 import java.security.*
 import java.security.cert.CertificateException
 import javax.crypto.Cipher
@@ -29,39 +29,9 @@ import javax.crypto.SecretKey
  * Created by pro100svitlo on 11/23/16.
  */
 @TargetApi(Build.VERSION_CODES.M)
-internal class FahManager() : FingerprintManager.AuthenticationCallback() {
-
-    class Builder(@NonNull internal val mContext: Context, l: FahListener) {
-
-        internal val mListener: WeakReference<FahListener>
-        internal var mKeyName: String? = null
-        internal var mTryTimeOut: Long = 0
-        internal var mLoggingEnable: Boolean = false
-
-        init {
-            mListener = WeakReference(l)
-        }
-
-        fun setKeyName(keyName: String): Builder {
-            mKeyName = keyName
-            return this
-        }
-
-        fun setLoggingEnable(enable: Boolean): Builder {
-            mLoggingEnable = enable
-            return this
-        }
-
-
-        fun setTryTimeOut(milliseconds: Long): Builder {
-            mTryTimeOut = milliseconds
-            return this
-        }
-
-        fun build(): FahManager {
-            return FahManager(this)
-        }
-    }
+internal class FahManager(@NonNull c: Context, l: FahListener?, keyName: String,
+                          loggingEnable: Boolean, tryTimeOut: Long) :
+        FingerprintManager.AuthenticationCallback() {
 
     private val KEY_TO_MANY_TRIES_ERROR = "KEY_TO_MANY_TRIES_ERROR"
     private val KEY_LOGGING_ENABLE = "KEY_LOGGING_ENABLE"
@@ -69,8 +39,8 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
     private val KEY_IS_LISTENING = "KEY_IS_LISTENING"
     private val TRY_LEFT_DEFAULT = 5
 
-    private var mContext: WeakReference<Context>? = null
-    private var mListener: WeakReference<FahListener>? = null
+    private var mContext: SoftReference<Context>?
+    private var mListener: SoftReference<FahListener>? = null
     private var mFingerprintManager: FingerprintManager? = null
     private var mCipher: Cipher? = null
     private var mKeyStore: KeyStore? = null
@@ -81,25 +51,25 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
     private var mShp: SharedPreferences? = null
     private var mTimeOutIntent: Intent? = null
 
-    private var mKeyName: String? = null
-    private var mTimeOutLeft: Long = 0
-    private var mTryTimeOut: Long = 0
-    private var mTriesCountLeft: Int = 0
-    private var mTryTimeOutDefault: Long = 0
-    private var mIsActivityForeground: Boolean = false
-    private var mSelfCancelled: Boolean = false
-    private var mIsListening: Boolean = false
-    private var mLoggingEnable: Boolean = false
-    private var mAfterStartListenTimeOut: Boolean = false
-    private var mBroadcastRegistered: Boolean = false
-    private var mSecureElementsReady: Boolean = false
+    var mTimeOutLeft = 0L
+    var mTriesCountLeft = 0
+    private var mKeyName = keyName
+    private var mTryTimeOut = tryTimeOut
+    private var mTryTimeOutDefault = 0L
+    private var mIsActivityForeground = false
+    private var mSelfCancelled = false
+    private var mIsListening = false
+    private var mLoggingEnable = loggingEnable
+    private var mAfterStartListenTimeOut = false
+    private var mBroadcastRegistered = false
+    private var mSecureElementsReady = false
 
-    private constructor(b: Builder):this(){
-        mContext = WeakReference(b.mContext)
-        mListener = b.mListener
-        mLoggingEnable = b.mLoggingEnable
-        mKeyName = b.mKeyName
-        mTryTimeOutDefault = b.mTryTimeOut
+    init {
+        mContext = SoftReference(c)
+        l?.let {
+            mListener = SoftReference(l)
+        }
+        mTryTimeOutDefault = mTryTimeOut
 
         mFingerprintManager = mContext!!.get()?.getSystemService(FingerprintManager::class.java)
         keyguardManager = mContext!!.get().getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
@@ -107,11 +77,10 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
         initAdditionalComponents()
 
         if (isTimerActive() && !FahTimeOutService.isRunning()) {
-            mListener?.get()?.onFingerprintStatus(
-                    false,
-                    FahErrorType.Auth.AUTH_TO_MANY_TRIES,
-                    getToManyTriesErrorStr())
-            runTimeOutService()
+            mListener?.get()?.let {
+                it.onFingerprintStatus(false,FahErrorType.Auth.AUTH_TO_MANY_TRIES, getToManyTriesErrorStr())
+                runTimeOutService()
+            }
         } else if (isTimerActive()) {
             registerBroadcast(true)
         }
@@ -131,59 +100,43 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
             logThis("error: " + FahErrorType.getErrorNameByCode(FahErrorType.AUTH_ERROR_BASE + errMsgId) +
                     " (" + errString + ")")
 
-            if (mListener != null) {
-                mListener?.get()?.onFingerprintStatus(
-                        false,
-                        FahErrorType.AUTH_ERROR_BASE + errMsgId,
-                        errString)
-            }
+            mListener?.get()?.onFingerprintStatus(false, FahErrorType.AUTH_ERROR_BASE + errMsgId,
+                    errString)
 
             logThis("stopListening")
 
-            if (mListener != null) {
-                mListener?.get()?.onFingerprintListening(false, 0)
-            }
+            mListener?.get()?.onFingerprintListening(false, 0)
+
             if (errMsgId == FingerprintManager.FINGERPRINT_ERROR_LOCKOUT) {
-                mShp!!.edit().putString(KEY_TO_MANY_TRIES_ERROR, errString.toString()).apply()
-                runTimeOutService()
+                mShp?.edit()?.putString(KEY_TO_MANY_TRIES_ERROR, errString.toString())?.let {
+                    it.apply()
+                    runTimeOutService()
+                }
             }
         }
     }
 
     override fun onAuthenticationHelp(helpMsgId: Int,
                                       helpString: CharSequence) {
-        if (helpMsgId == 0) {
-            return
-        }
+        if (helpMsgId == 0) return
         logThis("onAuthenticationHelp called")
         logThis("error: " + FahErrorType.getErrorNameByCode(FahErrorType.HELP_ERROR_BASE + helpMsgId) +
                 " (" + helpString + ")")
 
-        if (mListener != null) {
-            mListener?.get()?.onFingerprintStatus(
-                    false,
-                    FahErrorType.HELP_ERROR_BASE + helpMsgId,
-                    helpString)
-        }
+        mListener?.get()?.onFingerprintStatus( false, FahErrorType.HELP_ERROR_BASE + helpMsgId, helpString)
     }
 
     override fun onAuthenticationFailed() {
         logThis("AUTH_NOT_RECOGNIZED")
         mTriesCountLeft--
-        if (mListener != null) {
-            mListener?.get()?.onFingerprintStatus(
-                    false,
-                    FahErrorType.Auth.AUTH_NOT_RECOGNIZED,
-                    mContext?.get()?.getString(R.string.FINGERPRINT_NOT_RECOGNIZED)!!)
-        }
+        mListener?.get()?.onFingerprintStatus(false, FahErrorType.Auth.AUTH_NOT_RECOGNIZED,
+                mContext?.get()?.getString(R.string.FINGERPRINT_NOT_RECOGNIZED))
     }
 
     override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult) {
         logThis("onAuthenticationSucceeded")
         mTriesCountLeft = TRY_LEFT_DEFAULT
-        if (mListener != null) {
-            mListener?.get()?.onFingerprintStatus(true, -1, "")
-        }
+        mListener?.get()?.onFingerprintStatus(true, -1, "")
     }
 
     internal fun startListening(): Boolean {
@@ -199,9 +152,7 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
             // The line below prevents the false positive inspection from Android Studio
 
             mFingerprintManager?.authenticate(mCryptoObject, mCancellationSignal, 0 /* flags */, this, null)
-            if (mListener != null) {
-                mListener?.get()?.onFingerprintListening(true, 0)
-            }
+            mListener?.get()?.onFingerprintListening(true, 0)
             mIsListening = true
             mTriesCountLeft = TRY_LEFT_DEFAULT
         }
@@ -223,36 +174,40 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
     }
 
     internal fun onSaveInstanceState(outState: Bundle) {
-        outState.putLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, mTryTimeOut)
-        outState.putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, mTimeOutLeft)
-        outState.putBoolean(KEY_LOGGING_ENABLE, mLoggingEnable)
-        outState.putString(KEY_SECURE_KEY_NAME, mKeyName)
-        outState.putBoolean(KEY_IS_LISTENING, mIsListening)
+        with(outState){
+            putLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, mTryTimeOut)
+            putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, mTimeOutLeft)
+            putBoolean(KEY_LOGGING_ENABLE, mLoggingEnable)
+            putString(KEY_SECURE_KEY_NAME, mKeyName)
+            putBoolean(KEY_IS_LISTENING, mIsListening)
+        }
     }
 
     internal fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        mTryTimeOut = savedInstanceState.getLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT)
-        mTimeOutLeft = savedInstanceState.getLong(FahConstants.Manager.KEY_TIME_OUT_LEFT)
-        mLoggingEnable = savedInstanceState.getBoolean(KEY_LOGGING_ENABLE)
-        mKeyName = savedInstanceState.getString(KEY_SECURE_KEY_NAME)
-        mIsListening = savedInstanceState.getBoolean(KEY_IS_LISTENING, false)
+        with(savedInstanceState){
+            mTryTimeOut = getLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT)
+            mTimeOutLeft = getLong(FahConstants.Manager.KEY_TIME_OUT_LEFT)
+            mLoggingEnable = getBoolean(KEY_LOGGING_ENABLE)
+            mKeyName = getString(KEY_SECURE_KEY_NAME)
+            mIsListening = getBoolean(KEY_IS_LISTENING, false)
+        }
 
-        if (mTimeOutLeft > 0 && mListener?.get() != null) {
+        if (mTimeOutLeft > 0) {
             mListener?.get()?.onFingerprintListening(false, mTimeOutLeft)
         }
     }
 
     internal fun onDestroy() {
+        mContext?.clear()
+        mListener?.clear()
         mContext = null
+        mListener = null
         mFingerprintManager = null
         keyguardManager = null
         mKeyStore = null
         mKeyGenerator = null
         mCipher = null
         mCryptoObject = null
-        mListener?.clear()
-        mListener = null
-        mKeyName = null
         mTimeOutIntent = null
     }
 
@@ -261,35 +216,27 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
     }
 
     internal fun canListen(showError: Boolean): Boolean {
-        if (!isSecureComponentsInit(showError)) {
-            return false
-        }
+        if (!isSecureComponentsInit(showError)) return false
 
-        if (isPermissionNeeded(showError)) {
-            return false
-        }
+        if (isPermissionNeeded(showError)) return false
+
         if (!isHardwareEnabled()) {
-            if (mListener != null && showError) {
-                mListener?.get()?.onFingerprintStatus(
-                        false,
-                        FahErrorType.General.HARDWARE_DISABLED,
-                        mContext?.get()?.getString(R.string.HARDWARE_DISABLED)!!)
+            if (showError) {
+                mListener?.get()?.onFingerprintStatus(false, FahErrorType.General.HARDWARE_DISABLED,
+                        mContext?.get()?.getString(R.string.HARDWARE_DISABLED))
             }
             logThis("canListen failed. reason: " + mContext?.get()?.getString(R.string.HARDWARE_DISABLED))
             return false
         }
 
-        if (!keyguardManager!!.isKeyguardSecure) {
-            if (mListener != null && showError) {
-                mListener?.get()?.onFingerprintStatus(
-                        false,
-                        FahErrorType.General.LOCK_SCREEN_DISABLED,
-                        mContext?.get()?.getString(R.string.LOCK_SCREEN_DISABLED)!!)
+        if (keyguardManager?.isKeyguardSecure == false) {
+            if (showError) {
+                mListener?.get()?.onFingerprintStatus(false, FahErrorType.General.LOCK_SCREEN_DISABLED,
+                        mContext?.get()?.getString(R.string.LOCK_SCREEN_DISABLED))
             }
             logThis("canListen failed. reason: " + mContext?.get()?.getString(R.string.LOCK_SCREEN_DISABLED))
             return false
         }
-
         return true
     }
 
@@ -297,20 +244,13 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
         if (isPermissionNeeded(false)) {
             throw SecurityException("Missing 'USE_FINGERPRINT' permission!")
         }
-        return mFingerprintManager?.isHardwareDetected as Boolean
+        return mFingerprintManager?.isHardwareDetected ?: false
     }
 
     internal fun isFingerprintEnrolled(): Boolean {
         return isFingerprintEnrolled(false)
     }
 
-    internal fun getTimeOutLeft(): Long {
-        return mTimeOutLeft
-    }
-
-    internal fun getTriesCountLeft(): Int{
-        return mTriesCountLeft
-    }
 
     internal fun cleanTimeOut(): Boolean {
         if (isTimerActive() && FahTimeOutService.isRunning() && FahTimeOutService.tryToStopMe()) {
@@ -328,25 +268,38 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
                 mCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
                         + KeyProperties.BLOCK_MODE_CBC + "/"
                         + KeyProperties.ENCRYPTION_PADDING_PKCS7)
-            } catch (e: NoSuchAlgorithmException) {
-                throw RuntimeException("Failed to get an instance of Cipher", e)
-            } catch (e: NoSuchPaddingException) {
-                throw RuntimeException("Failed to get an instance of Cipher", e)
+            } catch (e: Exception) {
+                when(e){
+                    is NoSuchAlgorithmException, is NoSuchPaddingException ->{
+                        logThis("Failed to get an instance of Cipher: " + e.message)
+                        return false
+                    } else -> {
+                        logThis("Unexpected exception. Reason: " + e.message)
+                        return false
+                    }
+                }
             }
 
             try {
                 mKeyStore = KeyStore.getInstance("AndroidKeyStore")
             } catch (e: Exception) {
-                throw RuntimeException("create keyStore failed", e)
+                logThis("create keyStore failed: " + e.message)
+                return false
             }
 
             try {
                 mKeyGenerator = KeyGenerator
                         .getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
             } catch (e: NoSuchAlgorithmException) {
-                throw RuntimeException("Failed to get an instance of KeyGenerator", e)
-            } catch (e: NoSuchProviderException) {
-                throw RuntimeException("Failed to get an instance of KeyGenerator", e)
+                when(e){
+                    is NoSuchAlgorithmException, is NoSuchProviderException ->{
+                        logThis("Failed to get an instance of KeyGenerator: " + e.message)
+                        return false
+                    } else -> {
+                        logThis("Unexpected exception. Reason: " + e.message)
+                        return false
+                    }
+                }
             }
 
             try {
@@ -373,20 +326,23 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
                 try {
                     mKeyGenerator!!.init(builder.build())
                     mKeyGenerator!!.generateKey()
-                } catch (e: RuntimeException) {
+                } catch (e: Exception) {
                     mSecureElementsReady = false
                     logThis("isSecureComponentsInit failed. Reason: " + e.message)
                     return false
                 }
 
-            } catch (e: NoSuchAlgorithmException) {
-                throw RuntimeException(e)
-            } catch (e: InvalidAlgorithmParameterException) {
-                throw RuntimeException(e)
-            } catch (e: CertificateException) {
-                throw RuntimeException(e)
-            } catch (e: IOException) {
-                throw RuntimeException(e)
+            } catch (e: Exception) {
+                when (e){
+                    is NoSuchAlgorithmException, is InvalidAlgorithmParameterException,
+                            is CertificateException, is IOException ->{
+                        logThis("isSecureComponentsInit failed. Reason: " + e.message)
+                        return false
+                    } else -> {
+                        logThis("Unexpected exception. Reason: " + e.message)
+                        return false
+                    }
+                }
             }
 
             mSecureElementsReady = true
@@ -396,34 +352,30 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
     }
 
     private fun initAdditionalComponents() {
-        mShp = mContext!!.get().getSharedPreferences(mContext!!.get().getString(R.string.fah_app_name), Context.MODE_PRIVATE)
+        mShp = mContext?.get()?.getSharedPreferences(mContext!!.get().getString(R.string.fah_app_name), Context.MODE_PRIVATE)
         mTryTimeOut = mTryTimeOutDefault
     }
 
     private fun initCipher(): Boolean {
         try {
             mKeyStore!!.load(null)
-            val key = mKeyStore!!.getKey(mKeyName, null) as SecretKey
-            mCipher!!.init(Cipher.ENCRYPT_MODE, key)
+            mCipher!!.init(Cipher.ENCRYPT_MODE, mKeyStore!!.getKey(mKeyName, null) as SecretKey)
             mCryptoObject = FingerprintManager.CryptoObject(mCipher)
             return true
-        } catch (e: KeyPermanentlyInvalidatedException) {
-            logThis("initCipher failed. Reason: " + e.message)
-            return false
-        } catch (e: KeyStoreException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: CertificateException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: UnrecoverableKeyException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: IOException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: NoSuchAlgorithmException) {
-            throw RuntimeException("Failed to init Cipher", e)
-        } catch (e: InvalidKeyException) {
-            throw RuntimeException("Failed to init Cipher", e)
+        } catch (ex: Exception) {
+            when(ex) {
+                is KeyPermanentlyInvalidatedException, is KeyStoreException,
+                is CertificateException, is UnrecoverableKeyException,
+                is IOException, is NoSuchAlgorithmException,
+                is InvalidKeyException -> {
+                    logThis("initCipher failed. Reason: " + ex.message)
+                    return false
+                } else -> {
+                    logThis("Unexpected exception. Reason: " + ex.message)
+                    return false
+                }
+            }
         }
-
     }
 
     private fun isPermissionNeeded(showError: Boolean): Boolean {
@@ -432,22 +384,18 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
             return false
         }
         logThis("USE_FINGERPRINT PERMISSION = PERMISSION_DENIED")
-        if (mListener != null && showError) {
-            mListener?.get()?.onFingerprintStatus(
-                    false,
-                    FahErrorType.General.PERMISSION_NEEDED,
-                    mContext?.get()?.getString(R.string.PERMISSION_NEEDED)!!)
+        if (showError) {
+            mListener?.get()?.onFingerprintStatus(false, FahErrorType.General.PERMISSION_NEEDED,
+                    mContext?.get()?.getString(R.string.PERMISSION_NEEDED))
         }
         return true
     }
 
     private fun isFingerprintEnrolled(showError: Boolean): Boolean {
         if (!mFingerprintManager!!.hasEnrolledFingerprints()) {
-            if (mListener != null && showError) {
-                mListener?.get()?.onFingerprintStatus(
-                        false,
-                        FahErrorType.General.NO_FINGERPRINTS,
-                        mContext?.get()?.getString(R.string.NO_FINGERPRINTS)!!)
+            if (showError) {
+                mListener?.get()?.onFingerprintStatus(false, FahErrorType.General.NO_FINGERPRINTS,
+                        mContext?.get()?.getString(R.string.NO_FINGERPRINTS))
             }
             logThis("canListen failed. reason: " + mContext?.get()?.getString(R.string.NO_FINGERPRINTS))
             mSecureElementsReady = false
@@ -475,13 +423,13 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
         }
         mTimeOutLeft = mTryTimeOutDefault
         registerBroadcast(true)
-        mTimeOutIntent!!.putExtra(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, mTryTimeOut)
+        mTimeOutIntent?.putExtra(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, mTryTimeOut)
         mContext?.get()?.startService(mTimeOutIntent)
         saveTimeOut(System.currentTimeMillis() + mTryTimeOut)
     }
 
     private fun saveTimeOut(timesLeft: Long) {
-        mShp!!.edit().putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, timesLeft).apply()
+        mShp?.edit()?.putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, timesLeft)?.apply()
     }
 
     private fun isTimerActive(): Boolean {
@@ -497,14 +445,12 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
         return false
     }
 
-    private fun getToManyTriesErrorStr(): String {
-        return mShp!!.getString(KEY_TO_MANY_TRIES_ERROR, mContext?.get()?.getString(R.string.AUTH_TO_MANY_TRIES))
+    private fun getToManyTriesErrorStr(): String? {
+        return mShp?.getString(KEY_TO_MANY_TRIES_ERROR, mContext?.get()?.getString(R.string.AUTH_TO_MANY_TRIES))
     }
 
     private fun logThis(mess: String) {
-        if (mLoggingEnable) {
-            Log.d(FahConstants.TAG, mess)
-        }
+        if (mLoggingEnable) Log.d(FahConstants.TAG, mess)
     }
 
     private val timeOutBroadcast = object : BroadcastReceiver() {
@@ -513,7 +459,7 @@ internal class FahManager() : FingerprintManager.AuthenticationCallback() {
 
             logThis("mTimeOutLeft = " + (mTimeOutLeft / 1000).toString() + " sec")
 
-            if (mTimeOutLeft > 0 && mListener != null) {
+            if (mTimeOutLeft > 0) {
                 if (mIsActivityForeground) {
                     mListener?.get()?.onFingerprintListening(false, mTimeOutLeft)
                 }

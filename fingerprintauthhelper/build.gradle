@@ -25,6 +25,9 @@ android {
 task javadoc(type: Javadoc) {
     excludes = ['**/*.kt'] // < ---- Exclude all kotlin files from javadoc file.
 }
+//tasks.withType(Javadoc) {
+//    options.addBooleanOption('Xdoclint:none', true)
+//}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -38,7 +41,7 @@ dependencies {
 publish {
     groupId = 'com.github.pro100svitlo'
     artifactId = 'fingerprintAuthHelper'
-    publishVersion = '1.1.7'
+    publishVersion = '1.2.1'
     desc = 'A small library that allow You easy manage fingerprint authentication on devices with ' +
             'fingerprint scanner on Android M and upper'
     licences = ['MIT']
