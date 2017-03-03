@@ -216,9 +216,10 @@ internal class FahManager(@NonNull c: Context, l: FahListener?, keyName: String,
     }
 
     internal fun canListen(showError: Boolean): Boolean {
-        //Known issue with Samsung firmware: see the link https://stackoverflow.com/questions/39372230/fingerprintmanagercompat-method-had-issues-with-samsung-devices
-        //we need to call first Android method isHardwareDetected() to avoid java.lang.SecurityException: Permission Denial: getCurrentUser() from pid=xxxxx, uid=xxxxx
-        //requires android.permission.INTERACT_ACROSS_USERS
+        if (!isSecureComponentsInit(showError)) return false
+
+        if (isPermissionNeeded(showError)) return false
+      
         if (!isHardwareEnabled()) {
             if (showError) {
                 mListener?.get()?.onFingerprintStatus(false, FahErrorType.General.HARDWARE_DISABLED,
@@ -226,10 +227,7 @@ internal class FahManager(@NonNull c: Context, l: FahListener?, keyName: String,
             }
             logThis("canListen failed. reason: " + mContext?.get()?.getString(R.string.HARDWARE_DISABLED))
             return false
-        }  
-        if (!isSecureComponentsInit(showError)) return false
-
-        if (isPermissionNeeded(showError)) return false
+        }        
       
         if (keyguardManager?.isKeyguardSecure == false) {
             if (showError) {
@@ -394,7 +392,10 @@ internal class FahManager(@NonNull c: Context, l: FahListener?, keyName: String,
     }
 
     private fun isFingerprintEnrolled(showError: Boolean): Boolean {
-        if (!mFingerprintManager!!.hasEnrolledFingerprints()) {
+        //Known issue with Samsung firmware: see the link https://stackoverflow.com/questions/39372230/fingerprintmanagercompat-method-had-issues-with-samsung-devices
+        //we need to call first Android method isHardwareDetected() to avoid java.lang.SecurityException: Permission Denial: getCurrentUser() from pid=xxxxx, uid=xxxxx
+        //requires android.permission.INTERACT_ACROSS_USERS
+        if (!(isHardwareEnabled() && mFingerprintManager!!.hasEnrolledFingerprints())) {
             if (showError) {
                 mListener?.get()?.onFingerprintStatus(false, FahErrorType.General.NO_FINGERPRINTS,
                         mContext?.get()?.getString(R.string.NO_FINGERPRINTS))
