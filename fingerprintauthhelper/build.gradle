@@ -1,6 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.pro100svitlo'
 
 android {
     compileSdkVersion 24
@@ -20,6 +23,9 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
 }
 task javadoc(type: Javadoc) {
