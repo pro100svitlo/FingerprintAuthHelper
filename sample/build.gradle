@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.pro100svitlo'
+version = '1.0.3'
 
 android {
     compileSdkVersion project.compileSdk
@@ -30,6 +31,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "com.android.support:appcompat-v7:$supportLibrary"
     compile "com.android.support:design:$supportLibrary"
-//    compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.1.9'
     compile project(path: ':fingerprintauthhelper')
 }

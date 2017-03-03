@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.pro100svitlo'
+version = '1.2.2'
 
 android {
     compileSdkVersion project.compileSdk
@@ -41,8 +42,6 @@ dependencies {
     compile "com.android.support:appcompat-v7:$supportLibrary"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
-
-
 
 publish {
     groupId = 'com.github.pro100svitlo'
