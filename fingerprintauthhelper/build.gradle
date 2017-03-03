@@ -3,7 +3,8 @@ apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='com.pro100svitlo'
+group='com.github.pro100svitlo'
+version = '1.2.1'
 
 android {
     compileSdkVersion 24
