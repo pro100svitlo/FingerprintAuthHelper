@@ -5,7 +5,7 @@ Min sdk version 14.
 1. [Demo app](https://play.google.com/store/apps/details?id=com.pro100svitlo.fingerprintauthdemo)
 2. [Usage](#usage)
 3. [Documentation](Docs.md)
-4. [Updates](#updates)
+4. [ChangeLog](#changelog)
 5. [Questions and help](#questions-and-help)
 6. [License](#license)
 
@@ -17,7 +17,7 @@ Min sdk version 14.
 ##### Add the dependencies to your gradle file:
 ```sh
     dependencies {
-        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.2.1'
+        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.2.2'
     }
 ```
 
@@ -110,7 +110,10 @@ Full documentation and all options descriptions you can find [here](Docs.md).
 
 ---
 
-### Updates
+### ChangeLog
+* v.1.2.2
+    1. updated gradle version, Android SDK, .gitignore, kotlin version
+    1. fixed known issue with Samsung firmware
 * v.1.2.1
     1. refactoring
 * v.1.2.0

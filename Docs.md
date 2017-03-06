@@ -80,9 +80,10 @@ getTriesCountLeft()
 cleanTimeOut()
     // in case you want to authenticate with other method after 5 unsuccessful tries fingerprintAuth,
     // and you need "drop" fingerprint timeout
-    // if timeOut service is running and passed time is bigger then default timeOut (45 sec) - this method
-    // will stop timeoutservice; if passed time is less than default timeout - it will setUp leftTime as diff
-    // between default timeout and passed time
+    // if timeOut service is running and more than default timeOut (45 sec) have passed after
+    // 5 scan fails, then method will stop timeoutservice;
+    // If less then default timeOut have passed, than method will setUp leftTime as difference
+    // between default and passed time.
 
 getTimeOutLeft()
     // in case there were too many tries and timer is turned on 
