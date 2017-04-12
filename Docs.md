@@ -1,4 +1,4 @@
-#Documentation
+# Documentation
 
 1. [Init](#init)
 2. [Main methods](#main-methods)
@@ -6,7 +6,7 @@
 4. [Callbacks](#callbacks)
 5. [FahSecureSettingsDialog](#fahsecuresettingsdialog)
 
-###Init
+### Init
 
 ```sh
 mFAH = new FingerprintAuthHelper.Builder(this, this) 
@@ -21,7 +21,7 @@ mFAH = new FingerprintAuthHelper.Builder(this, this)
                 .build();
 ```
 
-###Main methods
+### Main methods
 ```sh
 startListening()
     // method must be called in onResume or when you need to start listening
@@ -40,7 +40,7 @@ onDestroy()
     // return false if device does not support Fingerprint technology
 ```
 
-###Additional methods
+### Additional methods
 ```sh
 onSaveInstanceState()
     // call this method to save data in case you need to support screen rotation
