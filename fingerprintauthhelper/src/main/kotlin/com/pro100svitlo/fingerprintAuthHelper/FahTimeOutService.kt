@@ -9,12 +9,12 @@ import android.os.Handler
  */
 class FahTimeOutService : IntentService("FahTimeOutService") {
 
-    private var broadcastIntent: Intent? = null
+    private val broadcastIntent: Intent by lazy { Intent(FahConstants.TimeOutService.TIME_OUT_BROADCAST) }
     private val mTimeOutHandler = Handler()
 
     companion object {
-        private var sTimeOutLeft: Long = 0
-        private var sTimeOut: Long = 0
+        private var timeOutLeft: Long = 0
+        private var timeOut: Long = 0
         private var running: Boolean = false
 
         fun isRunning(): Boolean {
@@ -22,11 +22,11 @@ class FahTimeOutService : IntentService("FahTimeOutService") {
         }
 
         fun tryToStopMe(): Boolean {
-            if (sTimeOut - sTimeOutLeft >= FahConstants.DEF_TRY_TIME_OUT) {
-                sTimeOutLeft = 0
+            if (timeOut - timeOutLeft >= FahConstants.DEF_TRY_TIME_OUT) {
+                timeOutLeft = 0
                 return true
             } else {
-                sTimeOutLeft = FahConstants.DEF_TRY_TIME_OUT - (sTimeOut - sTimeOutLeft)
+                timeOutLeft = FahConstants.DEF_TRY_TIME_OUT - (timeOut - timeOutLeft)
             }
             return false
         }
@@ -34,10 +34,9 @@ class FahTimeOutService : IntentService("FahTimeOutService") {
 
     override fun onHandleIntent(intent: Intent?) {
         running = true
-        broadcastIntent = Intent(FahConstants.TimeOutService.TIME_OUT_BROADCAST)
-        sTimeOut = intent!!.getLongExtra(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, -1)
-        sTimeOutLeft = sTimeOut
-        if (sTimeOutLeft > 0) {
+        timeOut = intent?.getLongExtra(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, -1) ?: -1
+        timeOutLeft = timeOut
+        if (timeOutLeft > 0) {
             timeoutRunnable.run()
         }
     }
@@ -46,14 +45,14 @@ class FahTimeOutService : IntentService("FahTimeOutService") {
     private var timeoutRunnable: Runnable = object :Runnable{
         override fun run() {
             running = true
-            sTimeOutLeft -= 1000
-            if (sTimeOutLeft > 0) {
+            timeOutLeft -= 1000
+            if (timeOutLeft > 0) {
                 mTimeOutHandler.postDelayed(this, 1000)
             } else {
                 running = false
-                sTimeOutLeft = 0
+                timeOutLeft = 0
             }
-            broadcastIntent?.putExtra(FahConstants.Manager.KEY_TIME_OUT_LEFT, sTimeOutLeft)
+            broadcastIntent.putExtra(FahConstants.Manager.KEY_TIME_OUT_LEFT, timeOutLeft)
             sendBroadcast(broadcastIntent)
             if (!running) {
                 stopSelf()
