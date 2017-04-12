@@ -236,8 +236,8 @@ mSecureSettingsDialog = new FahSecureSettingsDialog
                                   //    works if the lock screen has been secured).\n
                                   // 2. that at least one fingerprint has been registered on the device.\n\n
                                   // Wish to open Secure Settings to verify?
-                              .setPostisive(String)
-                              .setPostisive(stringResId)
+                              .setPositive(String)
+                              .setPositive(stringResId)
                                   // default: 
                                   // Settings
                               .setNegative(String)
