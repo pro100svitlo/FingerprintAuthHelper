@@ -144,7 +144,6 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     fun isFingerprintEnrolled() = isFingerprintEnrolled
 
     var isTimeOutCleaned = false
-        @JvmName("cleanTimeOut")
         get() {
             logThis("cleanTimeOut called")
             if (fahManager == null) {
@@ -157,7 +156,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
         }
         private set
 
-    @JvmName("_cleanTimeOut")
+    @JvmName("cleanTimeOut")
     @Deprecated("Use isTimeOutClean property instead", ReplaceWith("isTimeOutCleaned"))
     fun cleanTimeOut() = isTimeOutCleaned
 
