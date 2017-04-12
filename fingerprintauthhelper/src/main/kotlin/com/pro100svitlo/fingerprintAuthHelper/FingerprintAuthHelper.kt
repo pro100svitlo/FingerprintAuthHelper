@@ -37,14 +37,14 @@ class FingerprintAuthHelper private constructor(b: Builder) {
 
     private val fahManager = if (isSdkVersionOk) FahManager(b.context, b.listener, b.keyName, loggingEnable, b.timeOut) else null
 
-    var timeOutLeft = fahManager?.mTimeOutLeft ?: -1
+    var timeOutLeft = fahManager?.timeOutLeft ?: -1
         get() {
             logThis("getTimeOutLeft called")
             if (fahManager == null) {
                 serviceNotEnable("getTimeOutLeft")
                 return -1
             }
-            field = fahManager.mTimeOutLeft
+            field = fahManager.timeOutLeft
             logThis("timeOutLeft = $field millisecond")
             return field
 
@@ -62,7 +62,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
                 serviceNotEnable("getTriesCountLeft")
                 return 0
             }
-            field = fahManager.mTriesCountLeft
+            field = fahManager.triesCountLeft
             logThis("triesCountLeft = $field")
             return field
         }

@@ -52,8 +52,11 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
     private var shp: SharedPreferences = c.getSharedPreferences(c.getString(R.string.fah_app_name), Context.MODE_PRIVATE)
     private var timeOutIntent: Intent? = null
 
-    var mTimeOutLeft = 0L
-    var mTriesCountLeft = 0
+    internal var timeOutLeft = 0L
+        private set
+    internal var triesCountLeft = 0
+        private set
+
     private var tryTimeOutDefault = tryTimeOut
     private var isActivityForeground = false
     private var selfCancelled = false
@@ -113,23 +116,23 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
 
     override fun onAuthenticationFailed() {
         logThis("AUTH_NOT_RECOGNIZED")
-        mTriesCountLeft--
+        triesCountLeft--
         listener?.get()?.onFingerprintStatus(false, FahErrorType.Auth.AUTH_NOT_RECOGNIZED,
                 context.get()?.getString(R.string.FINGERPRINT_NOT_RECOGNIZED))
     }
 
     override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult) {
         logThis("onAuthenticationSucceeded")
-        mTriesCountLeft = TRY_LEFT_DEFAULT
+        triesCountLeft = TRY_LEFT_DEFAULT
         listener?.get()?.onFingerprintStatus(true, -1, "")
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     internal fun startListening(): Boolean {
         isActivityForeground = true
-        if (mTimeOutLeft > 0 || !canListen(true) || !initCipher()) {
+        if (timeOutLeft > 0 || !canListen(true) || !initCipher()) {
             isListening = false
-            mTriesCountLeft = 0
+            triesCountLeft = 0
         } else {
             afterStartListenTimeOut = true
             Handler().postDelayed({ afterStartListenTimeOut = false }, 200)
@@ -140,7 +143,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
             fingerprintManager.authenticate(cryptoObject, cancellationSignal, 0 /* flags */, this, null)
             listener?.get()?.onFingerprintListening(true, 0)
             isListening = true
-            mTriesCountLeft = TRY_LEFT_DEFAULT
+            triesCountLeft = TRY_LEFT_DEFAULT
         }
         registerBroadcast(true)
         return isListening
@@ -155,14 +158,14 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
             isListening = false
         }
         registerBroadcast(false)
-        mTriesCountLeft = TRY_LEFT_DEFAULT
+        triesCountLeft = TRY_LEFT_DEFAULT
         return isListening
     }
 
     internal fun onSaveInstanceState(outState: Bundle) {
         with(outState){
             putLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, tryTimeOut)
-            putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, mTimeOutLeft)
+            putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, timeOutLeft)
             putBoolean(KEY_LOGGING_ENABLE, loggingEnable)
             putString(KEY_SECURE_KEY_NAME, keyName)
             putBoolean(KEY_IS_LISTENING, isListening)
@@ -172,14 +175,14 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
     internal fun onRestoreInstanceState(savedInstanceState: Bundle) {
         with(savedInstanceState){
             tryTimeOut = getLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT)
-            mTimeOutLeft = getLong(FahConstants.Manager.KEY_TIME_OUT_LEFT)
+            timeOutLeft = getLong(FahConstants.Manager.KEY_TIME_OUT_LEFT)
             loggingEnable = getBoolean(KEY_LOGGING_ENABLE)
             keyName = getString(KEY_SECURE_KEY_NAME)
             isListening = getBoolean(KEY_IS_LISTENING, false)
         }
 
-        if (mTimeOutLeft > 0) {
-            listener?.get()?.onFingerprintListening(false, mTimeOutLeft)
+        if (timeOutLeft > 0) {
+            listener?.get()?.onFingerprintListening(false, timeOutLeft)
         }
     }
 
@@ -237,7 +240,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
 
     internal fun cleanTimeOut(): Boolean {
         if (isTimerActive() && FahTimeOutService.isRunning() && FahTimeOutService.tryToStopMe()) {
-            mTimeOutLeft = 0
+            timeOutLeft = 0
             saveTimeOut(-1)
             return true
         }
@@ -399,11 +402,11 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
     }
 
     private fun registerBroadcast(register: Boolean) {
-        if (mTimeOutLeft > 0 && register && !broadcastRegistered) {
+        if (timeOutLeft > 0 && register && !broadcastRegistered) {
             logThis("broadcastRegistered = " + true)
             broadcastRegistered = true
             context.get()?.registerReceiver(timeOutBroadcast, IntentFilter(FahConstants.TimeOutService.TIME_OUT_BROADCAST))
-        } else if (mTimeOutLeft > 0 && !register && broadcastRegistered && !FahTimeOutService.isRunning()) {
+        } else if (timeOutLeft > 0 && !register && broadcastRegistered && !FahTimeOutService.isRunning()) {
             logThis("broadcastRegistered = " + false)
             broadcastRegistered = false
             context.get()?.unregisterReceiver(timeOutBroadcast)
@@ -415,7 +418,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
         if (timeOutIntent == null) {
             timeOutIntent = Intent(context.get(), FahTimeOutService::class.java)
         }
-        mTimeOutLeft = tryTimeOutDefault
+        timeOutLeft = tryTimeOutDefault
         registerBroadcast(true)
         timeOutIntent?.putExtra(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, tryTimeOut)
         context.get()?.startService(timeOutIntent)
@@ -431,7 +434,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
         val current = System.currentTimeMillis()
         if (current < i) {
             tryTimeOut = i - current
-            mTimeOutLeft = tryTimeOut
+            timeOutLeft = tryTimeOut
             logThis("isTimeOutActive = " + true)
             return true
         }
@@ -449,19 +452,19 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
 
     private val timeOutBroadcast = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            mTimeOutLeft = intent.getLongExtra(FahConstants.Manager.KEY_TIME_OUT_LEFT, -1)
+            timeOutLeft = intent.getLongExtra(FahConstants.Manager.KEY_TIME_OUT_LEFT, -1)
 
-            logThis("mTimeOutLeft = " + (mTimeOutLeft / 1000).toString() + " sec")
+            logThis("timeOutLeft = " + (timeOutLeft / 1000).toString() + " sec")
 
-            if (mTimeOutLeft > 0) {
+            if (timeOutLeft > 0) {
                 if (isActivityForeground) {
-                    listener?.get()?.onFingerprintListening(false, mTimeOutLeft)
+                    listener?.get()?.onFingerprintListening(false, timeOutLeft)
                 }
-                saveTimeOut(System.currentTimeMillis() + mTimeOutLeft)
-            } else if (mTimeOutLeft <= 0){
+                saveTimeOut(System.currentTimeMillis() + timeOutLeft)
+            } else if (timeOutLeft <= 0){
                 registerBroadcast(false)
                 saveTimeOut(-1)
-                mTriesCountLeft = TRY_LEFT_DEFAULT
+                triesCountLeft = TRY_LEFT_DEFAULT
                 tryTimeOut = tryTimeOutDefault
                 if (isActivityForeground) {
                     startListening()
