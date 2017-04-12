@@ -134,7 +134,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
                 return false
             }
             field = fahManager.isFingerprintEnrolled()
-            logThis("isFingerprintEnrolled = " + isFingerprintEnrolled)
+            logThis("isFingerprintEnrolled = " + field)
             return field
         }
         private set
@@ -150,9 +150,9 @@ class FingerprintAuthHelper private constructor(b: Builder) {
                 serviceNotEnable("cleanTimeOut")
                 return false
             }
-            isTimeOutCleaned = fahManager.cleanTimeOut()
-            logThis("timeOutCleaned = $isTimeOutCleaned")
-            return isTimeOutCleaned
+            field = fahManager.cleanTimeOut()
+            logThis("timeOutCleaned = $field")
+            return field
         }
         private set
 
