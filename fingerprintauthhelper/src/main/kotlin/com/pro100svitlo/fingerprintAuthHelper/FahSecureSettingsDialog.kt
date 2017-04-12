@@ -74,9 +74,7 @@ class FahSecureSettingsDialog private constructor(b: FahSecureSettingsDialog.Bui
             return this
         }
 
-        fun build(): FahSecureSettingsDialog {
-            return FahSecureSettingsDialog(this)
-        }
+        fun build() = FahSecureSettingsDialog(this)
     }
 
     private val context = b.context
