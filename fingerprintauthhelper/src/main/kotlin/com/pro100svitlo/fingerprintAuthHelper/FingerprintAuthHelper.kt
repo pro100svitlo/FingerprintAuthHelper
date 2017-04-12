@@ -143,22 +143,16 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     @Deprecated("Use isFingerprintEnrolled property instead", ReplaceWith("isFingerprintEnrolled"))
     fun isFingerprintEnrolled() = isFingerprintEnrolled
 
-    var isTimeOutCleaned = false
-        get() {
-            logThis("cleanTimeOut called")
-            if (fahManager == null) {
-                serviceNotEnable("cleanTimeOut")
-                return false
-            }
-            field = fahManager.cleanTimeOut()
-            logThis("timeOutCleaned = $field")
-            return field
+    fun cleanTimeOut(): Boolean {
+        logThis("cleanTimeOut called")
+        if (fahManager == null) {
+            serviceNotEnable("cleanTimeOut")
+            return false
         }
-        private set
-
-    @JvmName("cleanTimeOut")
-    @Deprecated("Use isTimeOutClean property instead", ReplaceWith("isTimeOutCleaned"))
-    fun cleanTimeOut() = isTimeOutCleaned
+        val isCleaned = fahManager.cleanTimeOut()
+        logThis("timeOutCleaned = $isCleaned")
+        return isCleaned
+    }
 
     fun startListening(): Boolean {
         logThis("startListening called")
