@@ -162,24 +162,20 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
         return isListening
     }
 
-    internal fun onSaveInstanceState(outState: Bundle) {
-        with(outState){
-            putLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, tryTimeOut)
-            putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, timeOutLeft)
-            putBoolean(KEY_LOGGING_ENABLE, loggingEnable)
-            putString(KEY_SECURE_KEY_NAME, keyName)
-            putBoolean(KEY_IS_LISTENING, isListening)
-        }
+    internal fun onSaveInstanceState(outState: Bundle) = with(outState) {
+        putLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT, tryTimeOut)
+        putLong(FahConstants.Manager.KEY_TIME_OUT_LEFT, timeOutLeft)
+        putBoolean(KEY_LOGGING_ENABLE, loggingEnable)
+        putString(KEY_SECURE_KEY_NAME, keyName)
+        putBoolean(KEY_IS_LISTENING, isListening)
     }
 
-    internal fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        with(savedInstanceState){
-            tryTimeOut = getLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT)
-            timeOutLeft = getLong(FahConstants.Manager.KEY_TIME_OUT_LEFT)
-            loggingEnable = getBoolean(KEY_LOGGING_ENABLE)
-            keyName = getString(KEY_SECURE_KEY_NAME)
-            isListening = getBoolean(KEY_IS_LISTENING, false)
-        }
+    internal fun onRestoreInstanceState(savedInstanceState: Bundle) = with(savedInstanceState) {
+        tryTimeOut = getLong(FahConstants.TimeOutService.KEY_TRY_TIME_OUT)
+        timeOutLeft = getLong(FahConstants.Manager.KEY_TIME_OUT_LEFT)
+        loggingEnable = getBoolean(KEY_LOGGING_ENABLE)
+        keyName = getString(KEY_SECURE_KEY_NAME)
+        isListening = getBoolean(KEY_IS_LISTENING, false)
 
         if (timeOutLeft > 0) {
             listener?.get()?.onFingerprintListening(false, timeOutLeft)
@@ -197,9 +193,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
         timeOutIntent = null
     }
 
-    internal fun isListening(): Boolean {
-        return isListening
-    }
+    internal fun isListening(): Boolean = isListening
 
     internal fun canListen(showError: Boolean): Boolean {
         if (!isSecureComponentsInit(showError)) return false
@@ -233,10 +227,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
         return fingerprintManager.isHardwareDetected
     }
 
-    internal fun isFingerprintEnrolled(): Boolean {
-        return isFingerprintEnrolled(false)
-    }
-
+    internal fun isFingerprintEnrolled(): Boolean = isFingerprintEnrolled(false)
 
     internal fun cleanTimeOut(): Boolean {
         if (isTimerActive() && FahTimeOutService.isRunning() && FahTimeOutService.tryToStopMe()) {
@@ -442,9 +433,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
         return false
     }
 
-    private fun getToManyTriesErrorStr(): String? {
-        return shp.getString(KEY_TO_MANY_TRIES_ERROR, context.get()?.getString(R.string.AUTH_TO_MANY_TRIES))
-    }
+    private fun getToManyTriesErrorStr(): String? = shp.getString(KEY_TO_MANY_TRIES_ERROR, context.get()?.getString(R.string.AUTH_TO_MANY_TRIES))
 
     private fun logThis(mess: String) {
         if (loggingEnable) Log.d(FahConstants.TAG, mess)
