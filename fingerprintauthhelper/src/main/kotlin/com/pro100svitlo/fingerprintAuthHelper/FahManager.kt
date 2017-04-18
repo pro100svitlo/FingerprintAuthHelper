@@ -68,7 +68,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
     init {
         if (isTimerActive() && !FahTimeOutService.isRunning()) {
             l?.let {
-                it.onFingerprintStatus(false,FahErrorType.Auth.AUTH_TO_MANY_TRIES, getToManyTriesErrorStr())
+                it.onFingerprintStatus(false,FahErrorType.Auth.AUTH_TOO_MANY_TRIES, getToManyTriesErrorStr())
                 runTimeOutService()
             }
         } else if (isTimerActive()) {
