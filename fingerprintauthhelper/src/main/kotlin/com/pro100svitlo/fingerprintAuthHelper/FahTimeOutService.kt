@@ -16,12 +16,15 @@ class FahTimeOutService : IntentService("FahTimeOutService") {
         private var timeOutLeft: Long = 0
         private var timeOut: Long = 0
         private var running: Boolean = false
+        private var wasStoppedPreviously: Boolean = false
 
         fun isRunning(): Boolean {
             return running
         }
 
         fun tryToStopMe(): Boolean {
+            if (wasStoppedPreviously) return false
+            wasStoppedPreviously = true
             if (timeOut - timeOutLeft >= FahConstants.DEF_TRY_TIME_OUT) {
                 timeOutLeft = 0
                 return true
