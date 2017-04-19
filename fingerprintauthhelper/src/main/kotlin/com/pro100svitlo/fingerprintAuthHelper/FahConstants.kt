@@ -3,20 +3,18 @@ package com.pro100svitlo.fingerprintAuthHelper
 /**
  * Created by pro100svitlo on 11/23/16.
  */
-object FahConstants{
+internal object FahConstants{
 
-    @JvmStatic
-    val TAG = FingerprintAuthHelper::class.java.simpleName!!
-    @JvmStatic
-    val DEF_TRY_TIME_OUT = (45 * 1000).toLong()
+    val TAG: String = FingerprintAuthHelper::class.java.simpleName
+
+    const val DEF_TRY_TIME_OUT = 45 * 1000L
+
     object TimeOutService{
-        @JvmStatic
-        val KEY_TRY_TIME_OUT = "KEY_TRY_TIME_OUT"
-        @JvmStatic
-        val TIME_OUT_BROADCAST = "TIME_OUT_BROADCAST"
+        const val KEY_TRY_TIME_OUT = "KEY_TRY_TIME_OUT"
+        const val TIME_OUT_BROADCAST = "TIME_OUT_BROADCAST"
     }
+
     object Manager{
-        @JvmStatic
-        val KEY_TIME_OUT_LEFT = "KEY_TIME_OUT_LEFT"
+        const val KEY_TIME_OUT_LEFT = "KEY_TIME_OUT_LEFT"
     }
 }

@@ -30,31 +30,33 @@ object FahErrorType {
         const val AUTH_TIMEOUT = 203
         const val AUTH_NO_SPACE = 204
         const val AUTH_CANCELED = 205
+        const val AUTH_TOO_MANY_TRIES = 207
+        @Deprecated("Use AUTH_TOO_MANY_TRIES instead.", ReplaceWith("FahErrorType.Auth.AUTH_TOO_MANY_TRIES"))
         const val AUTH_TO_MANY_TRIES = 207
     }
 
     fun getErrorNameByCode(fahError: Int): String {
-        when (fahError) {
-            General.PERMISSION_NEEDED -> return "PERMISSION_NEEDED"
-            General.LOCK_SCREEN_DISABLED -> return "LOCK_SCREEN_DISABLED"
-            General.NO_FINGERPRINTS -> return "NO_FINGERPRINTS"
-            General.HARDWARE_DISABLED -> return "HARDWARE_DISABLED"
+        return when (fahError) {
+            General.PERMISSION_NEEDED -> "PERMISSION_NEEDED"
+            General.LOCK_SCREEN_DISABLED -> "LOCK_SCREEN_DISABLED"
+            General.NO_FINGERPRINTS -> "NO_FINGERPRINTS"
+            General.HARDWARE_DISABLED -> "HARDWARE_DISABLED"
 
-            Help.HELP_SCANNED_PARTIAL -> return "HELP_SCANNED_PARTIAL"
-            Help.HELP_INSUFFICIENT -> return "HELP_INSUFFICIENT"
-            Help.HELP_SCANNER_DIRTY -> return "HELP_SCANNER_DIRTY"
-            Help.HELP_MOVE_TO_SLOW -> return "HELP_MOVE_TO_SLOW"
-            Help.HELP_MOVE_TO_FAST -> return "HELP_MOVE_TO_FAST"
+            Help.HELP_SCANNED_PARTIAL -> "HELP_SCANNED_PARTIAL"
+            Help.HELP_INSUFFICIENT -> "HELP_INSUFFICIENT"
+            Help.HELP_SCANNER_DIRTY -> "HELP_SCANNER_DIRTY"
+            Help.HELP_MOVE_TO_SLOW -> "HELP_MOVE_TO_SLOW"
+            Help.HELP_MOVE_TO_FAST -> "HELP_MOVE_TO_FAST"
 
-            Auth.AUTH_NOT_RECOGNIZED -> return "AUTH_NOT_RECOGNIZED"
-            Auth.AUTH_UNAVAILABLE -> return "AUTH_UNAVAILABLE"
-            Auth.AUTH_UNABLE_TO_PROCESS -> return "AUTH_UNABLE_TO_PROCESS"
-            Auth.AUTH_TIMEOUT -> return "AUTH_TIMEOUT"
-            Auth.AUTH_NO_SPACE -> return "AUTH_NO_SPACE"
-            Auth.AUTH_CANCELED -> return "AUTH_CANCELED"
-            Auth.AUTH_TO_MANY_TRIES -> return "AUTH_TO_MANY_TRIES"
+            Auth.AUTH_NOT_RECOGNIZED -> "AUTH_NOT_RECOGNIZED"
+            Auth.AUTH_UNAVAILABLE -> "AUTH_UNAVAILABLE"
+            Auth.AUTH_UNABLE_TO_PROCESS -> "AUTH_UNABLE_TO_PROCESS"
+            Auth.AUTH_TIMEOUT -> "AUTH_TIMEOUT"
+            Auth.AUTH_NO_SPACE -> "AUTH_NO_SPACE"
+            Auth.AUTH_CANCELED -> "AUTH_CANCELED"
+            Auth.AUTH_TOO_MANY_TRIES -> "AUTH_TOO_MANY_TRIES"
 
-            else -> return "UNKNOWN ERROR"
+            else -> "UNKNOWN ERROR"
         }
     }
 

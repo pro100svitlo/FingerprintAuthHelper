@@ -1,7 +1,10 @@
+@file:Suppress("unused")
+
 package com.pro100svitlo.fingerprintAuthHelper
 
 import android.app.Activity
 import android.content.Context
+import android.support.annotation.StringRes
 import android.support.v7.app.AlertDialog
 
 /**
@@ -9,122 +12,90 @@ import android.support.v7.app.AlertDialog
  */
 class FahSecureSettingsDialog private constructor(b: FahSecureSettingsDialog.Builder) {
 
-    class Builder(c: Context, internal val mFAH: FingerprintAuthHelper) {
+    class Builder(c: Context, internal val fah: FingerprintAuthHelper) {
 
-        internal var mContext: Context? = null
-        internal var mTitle: String? = null
-        internal var mMessage: String? = null
-        internal var mPositive: String? = null
-        internal var mNegative: String? = null
-
-        init {
-            if (c is Activity) {
-                mContext = c
-            } else {
-                throw IllegalArgumentException("Context for FahSecureSettingsDialog must be " + "instance of Activity for correct styling")
-            }
-        }
+        internal var context: Context = c as? Activity ?: throw IllegalArgumentException("Context for FahSecureSettingsDialog must be " + "instance of Activity for correct styling")
+        internal var title: String? = null
+        internal var message: String? = null
+        internal var positive: String? = null
+        internal var negative: String? = null
 
         fun setTitle(title: String): Builder {
-            mTitle = title
+            this.title = title
             return this
         }
 
-        fun setTitle(resId: Int): Builder {
-            mTitle = mContext!!.getString(resId)
+        fun setTitle(@StringRes resId: Int): Builder {
+            title = context.getString(resId)
             return this
         }
 
         fun setMessage(message: String): Builder {
-            mMessage = message
+            this.message = message
             return this
         }
 
-        fun setMessage(resId: Int): Builder {
-            mMessage = mContext!!.getString(resId)
+        fun setMessage(@StringRes resId: Int): Builder {
+            message = context.getString(resId)
             return this
         }
 
-        fun setPostisive(positive: String): Builder {
-            mPositive = positive
+        fun setPositive(positive: String): Builder {
+            this.positive = positive
             return this
         }
 
-        fun setPostisive(resId: Int): Builder {
-            mPositive = mContext!!.getString(resId)
+        @Deprecated("Use setPositive(positive: String) instead.", ReplaceWith("setPositive(positive)"))
+        fun setPostisive(positive: String): Builder = setPositive(positive)
+
+        fun setPositive(resId: Int): Builder {
+            positive = context.getString(resId)
             return this
         }
+
+        @Deprecated("Use setPositive(resId: Int) instead.", ReplaceWith("setPositive(resId)"))
+        fun setPostisive(@StringRes resId: Int): Builder = setPositive(resId)
 
         fun setNegative(negative: String): Builder {
-            mNegative = negative
+            this.negative = negative
             return this
         }
 
-        fun setNegative(resId: Int): Builder {
-            mNegative = mContext!!.getString(resId)
+        fun setNegative(@StringRes resId: Int): Builder {
+            negative = context.getString(resId)
             return this
         }
 
-        fun build(): FahSecureSettingsDialog {
-            if (mTitle == null) {
-                mTitle = mContext!!.getString(R.string.fah_dialog_openSecureSettings_title)
-            }
-
-            if (mMessage == null) {
-                mMessage = mContext!!.getString(R.string.fah_dialog_openSecureSettings_message)
-            }
-
-            if (mPositive == null) {
-                mPositive = mContext!!.getString(R.string.fah_dialog_openSecureSettings_pos)
-            }
-
-            if (mNegative == null) {
-                mNegative = mContext!!.getString(R.string.fah_dialog_openSecureSettings_neg)
-            }
-
-            return FahSecureSettingsDialog(this)
-        }
+        fun build() = FahSecureSettingsDialog(this)
     }
 
-    private val mContext: Context
-    private val mFAH: FingerprintAuthHelper
-    private var mDialog: AlertDialog? = null
+    private val context = b.context
+    private val fah = b.fah
+    private val dialog: AlertDialog by lazy { create() }
 
-    private val mTitle: String
-    private val mMessage: String
-    private val mPositive: String
-    private val mNegative: String
-
-    init {
-        mContext = b.mContext!!
-        mFAH = b.mFAH
-
-        mTitle = b.mTitle!!
-        mMessage = b.mMessage!!
-        mPositive = b.mPositive!!
-        mNegative = b.mNegative!!
-
-        create()
-    }
+    private val title = b.title ?: context.getString(R.string.fah_dialog_openSecureSettings_title)
+    private val message = b.message ?: context.getString(R.string.fah_dialog_openSecureSettings_message)
+    private val positive = b.positive ?: context.getString(R.string.fah_dialog_openSecureSettings_pos)
+    private val negative = b.negative ?: context.getString(R.string.fah_dialog_openSecureSettings_neg)
 
     fun show() {
-        mDialog!!.show()
+        dialog.show()
     }
 
     fun setMessage(mess: String) {
-        mDialog!!.setMessage(mess)
+        dialog.setMessage(mess)
     }
 
     fun setMessage(resId: Int) {
-        mDialog!!.setMessage(mContext.getString(resId))
+        dialog.setMessage(context.getString(resId))
     }
 
-    private fun create() {
-        mDialog = AlertDialog.Builder(mContext)
-                .setTitle(mTitle)
-                .setMessage(mMessage)
-                .setNegativeButton(mNegative, null)
-                .setPositiveButton(mPositive) { dialogInterface, i -> mFAH.openSecuritySettings() }
+    private fun create(): AlertDialog {
+        return AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setNegativeButton(negative, null)
+                .setPositiveButton(positive) { _, _ -> fah.openSecuritySettings() }
                 .create()
     }
 }
