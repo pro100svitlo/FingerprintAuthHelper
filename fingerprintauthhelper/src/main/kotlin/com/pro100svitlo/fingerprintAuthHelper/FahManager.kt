@@ -151,7 +151,7 @@ internal class FahManager(c: Context, l: FahListener?, var keyName: String,
 
     internal fun stopListening(): Boolean {
         isActivityForeground = false
-        if (cancellationSignal != null) {
+        cancellationSignal?.let {
             selfCancelled = true
             cancellationSignal?.cancel()
             cancellationSignal = null

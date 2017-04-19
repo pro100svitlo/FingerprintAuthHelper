@@ -38,6 +38,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     private val fahManager = if (isSdkVersionOk) FahManager(b.context, b.listener, b.keyName, loggingEnable, b.timeOut) else null
 
     var timeOutLeft = fahManager?.timeOutLeft ?: -1
+        private set
         get() {
             logThis("getTimeOutLeft called")
             if (fahManager == null) {
@@ -49,13 +50,13 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             return field
 
         }
-        private set
 
     @JvmName("_getTimeOutLeft")
     @Deprecated("Use getTimeOutLeft property instead", ReplaceWith("timeOutLeft"))
     fun getTimeOutLeft() = timeOutLeft
 
     var triesCountLeft: Int = 0
+        private set
         get() {
             logThis("getTriesCountLeft called")
             if (fahManager == null) {
@@ -66,7 +67,6 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             logThis("triesCountLeft = $field")
             return field
         }
-        private set
 
     @JvmName("_getTriesCountLeft")
     @Deprecated("Use getTriesCountLeft property instead", ReplaceWith("triesCountLeft"))
@@ -75,7 +75,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     var canListenByUser = true
         @JvmName("canListenByUser")
         get() {
-            logThis("canListenByUser called")
+            logThis("getCanListenByUser called")
             logThis("canListenByUser = $field")
             return field
         }
@@ -94,6 +94,7 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     fun setCanListenByUser(canListen: Boolean) = { canListenByUser = canListen }
 
     var isHardwareEnable = false
+        private set
         get() {
             logThis("isHardwareEnable called")
             if (fahManager == null) {
@@ -104,13 +105,13 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             logThis("isHardwareEnable = $field")
             return field
         }
-        private set
 
     @JvmName("_isHardwareEnable")
     @Deprecated("Use isHardwareEnable property instead", ReplaceWith("isHardwareEnable"))
     fun isHardwareEnable() = isHardwareEnable
 
     var isListening = false
+        private set
         get() {
             logThis("isListening called")
             if (fahManager == null) {
@@ -121,13 +122,13 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             logThis("isListening = $field")
             return field
         }
-        private set
 
     @JvmName("_isListening")
     @Deprecated("Use isListening property instead", ReplaceWith("isListening"))
     fun isListening() = isListening
 
     var isFingerprintEnrolled = false
+        private set
         get() {
             if (fahManager == null) {
                 serviceNotEnable("isFingerprintEnrolled")
@@ -137,7 +138,6 @@ class FingerprintAuthHelper private constructor(b: Builder) {
             logThis("isFingerprintEnrolled = " + field)
             return field
         }
-        private set
 
     @JvmName("_isFingerprintEnrolled")
     @Deprecated("Use isFingerprintEnrolled property instead", ReplaceWith("isFingerprintEnrolled"))
@@ -253,17 +253,9 @@ class FingerprintAuthHelper private constructor(b: Builder) {
     class Builder(c: Context, internal val listener: FahListener) {
 
         internal var timeOut = FahConstants.DEF_TRY_TIME_OUT
-        internal var context: Context
+        internal var context: Context = c as? Activity ?: throw IllegalArgumentException("Context for FingerprintAuthHelper must be instance of Activity")
         internal var keyName = FahConstants.TAG
         internal var loggingEnable: Boolean = false
-
-        init {
-            if (c is Activity) {
-                context = c
-            } else {
-                throw IllegalArgumentException("Context for FingerprintAuthHelper must be instance of Activity")
-            }
-        }
 
         fun setKeyName(keyName: String): Builder {
             this.keyName = keyName

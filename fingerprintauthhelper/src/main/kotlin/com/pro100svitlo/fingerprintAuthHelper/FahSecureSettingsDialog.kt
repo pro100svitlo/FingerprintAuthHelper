@@ -14,19 +14,11 @@ class FahSecureSettingsDialog private constructor(b: FahSecureSettingsDialog.Bui
 
     class Builder(c: Context, internal val fah: FingerprintAuthHelper) {
 
-        internal var context: Context
+        internal var context: Context = c as? Activity ?: throw IllegalArgumentException("Context for FahSecureSettingsDialog must be " + "instance of Activity for correct styling")
         internal var title: String? = null
         internal var message: String? = null
         internal var positive: String? = null
         internal var negative: String? = null
-
-        init {
-            if (c is Activity) {
-                context = c
-            } else {
-                throw IllegalArgumentException("Context for FahSecureSettingsDialog must be " + "instance of Activity for correct styling")
-            }
-        }
 
         fun setTitle(title: String): Builder {
             this.title = title
