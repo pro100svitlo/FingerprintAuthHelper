@@ -46,7 +46,7 @@ dependencies {
 publish {
     groupId = 'com.github.pro100svitlo'
     artifactId = 'fingerprintAuthHelper'
-    publishVersion = '1.2.2'
+    publishVersion = '1.3.0'
     desc = 'A small library that allow You easy manage fingerprint authentication on devices with ' +
             'fingerprint scanner on Android M and upper'
     licences = ['MIT']

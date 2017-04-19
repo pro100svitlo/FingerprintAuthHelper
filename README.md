@@ -17,7 +17,7 @@ Min sdk version 14.
 ##### Add the dependencies to your gradle file:
 ```sh
     dependencies {
-        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.2.2'
+        compile 'com.github.pro100svitlo:fingerprintAuthHelper:1.3.0'
     }
 ```
 
@@ -111,6 +111,11 @@ Full documentation and all options descriptions you can find [here](Docs.md).
 ---
 
 ### ChangeLog
+* v.1.3.0
+    1. kotlin style refactoring
+    2. fix bug with multiple calling tryToStopMe()
+    3. some library API updates (add few new and few deprecated methods)
+    //great thanks [Boris Rosenow](https://github.com/Bombo) for helping with this release!
 * v.1.2.2
     1. updated gradle version, Android SDK, .gitignore, kotlin version
     1. fixed known issue with Samsung firmware
